@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VisualState xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ShowCheckBoxes="false">
+  <TopNode>[0-1000]E:\Projects\TimeTracker\TimeTracker.nunit</TopNode>
+  <SelectedNode>[0-1135]TimeTracker.UnitTest</SelectedNode>
+  <ExcludeCategories>false</ExcludeCategories>
+  <Nodes>
+    <Node UniqueName="[0-1000]E:\Projects\TimeTracker\TimeTracker.nunit" Expanded="true" />
+    <Node UniqueName="[0-1130]E:\Projects\TimeTracker\TimeTracker\bin\Debug\TimeTracker.exe" Expanded="true" />
+    <Node UniqueName="[0-1131]TimeTracker" Expanded="true" />
+    <Node UniqueName="[0-1132]TimeTracker.Storage" Expanded="true" />
+    <Node UniqueName="[0-1133]TimeTracker.Storage.Sqlite" Expanded="true" />
+    <Node UniqueName="[0-1134]TimeTracker.Storage.Sqlite.UnitTest" Expanded="true" />
+    <Node UniqueName="[0-1135]TimeTracker.UnitTest" Expanded="true" />
+    <Node UniqueName="[0-1108]TimeTracker.UnitTest.StatusViewModelTest" Expanded="true" />
+  </Nodes>
+</VisualState>
