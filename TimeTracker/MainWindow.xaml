@@ -72,7 +72,7 @@
             <StackPanel Grid.Column="11" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
                 <TextBlock Name="TextBlockGotoEarlierDate" VerticalAlignment="Center" FontFamily="Consolas" FontSize="20" ><Hyperlink Click="OnGotoEarlierDate" >&lt;</Hyperlink></TextBlock>
                 <StackPanel Orientation="Vertical" Margin="4,0,4,0">
-                    <TextBlock Name="CurrentTime" FontFamily="Consolas" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Path=CurrentDate, StringFormat=MM-dd}" />
+                    <TextBlock Name="CurrentTime" FontFamily="Consolas" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Path=CurrentDate, StringFormat=dd-MM}" />
                     <TextBlock Name="CurrentYear" FontFamily="Consolas" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Path=CurrentDate, StringFormat=yyyy}" />
                 </StackPanel>
                 <TextBlock Name="TextBlockGotoLaterDate" VerticalAlignment="Center" FontFamily="Consolas" FontSize="20" IsEnabled="{Binding Path=CanGotoLaterDate}" ><Hyperlink Click="OnGotoLaterDate" >&gt;</Hyperlink></TextBlock>
