@@ -16,6 +16,7 @@
                 <GridView>
                     <GridViewColumn Header="Start" Width="50" DisplayMemberBinding="{Binding Path=StartTime, StringFormat=HH:mm}" />
                     <GridViewColumn Header="End" Width="50" DisplayMemberBinding="{Binding Path=EndTime, StringFormat=HH:mm}" />
+                    <GridViewColumn Header="Interval" Width="50" DisplayMemberBinding="{Binding Path=Difference, StringFormat=hh\\:mm}" />
                     <GridViewColumn Header="Description" Width="470" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
