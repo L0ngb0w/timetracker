@@ -38,7 +38,7 @@ namespace TimeTracker
             get
             {
                 var time = CurrentTimeActual;
-                return Round(ref time);
+                return Truncator.Truncate(ref time, Truncation.Round15);
             }
         }
 
@@ -47,7 +47,7 @@ namespace TimeTracker
             get
             {
                 var time = TotalTimeActual;
-                return Round(ref time);
+                return Truncator.Truncate(ref time, Truncation.Round15);
             }
         }
 
@@ -71,7 +71,7 @@ namespace TimeTracker
             get
             {
                 var time = FlexActual;
-                return Round(ref time);
+                return Truncator.Truncate(ref time, Truncation.Round15);
             }
         }
 
@@ -126,6 +126,7 @@ namespace TimeTracker
             FirePropertyChanged("CurrentTimeActual");
             FirePropertyChanged("TotalTimeRounded");
             FirePropertyChanged("TotalTimeActual");
+            FirePropertyChanged("FlexRounded");
             FirePropertyChanged("FlexActual");
             FirePropertyChanged("IsFlexActualNegative");
         }
@@ -134,26 +135,6 @@ namespace TimeTracker
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
-        }
-
-        static TimeSpan Round(ref TimeSpan time)
-        {
-            var current = (int)time.TotalSeconds;
-            var start = (int)Math.Floor(time.TotalHours) * 3600;
-            var end = start + 3600;
-
-            for (var c = start; c < end; c += 900)
-            {
-                if (c <= current && current < c + 900)
-                {
-                    if (current - c <= c + 900 - current)
-                        return TimeSpan.FromSeconds(c);
-                    else
-                        return TimeSpan.FromSeconds(c + 900);
-                }
-            }
-
-            return new TimeSpan();
         }
     }
 }

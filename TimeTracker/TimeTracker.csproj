@@ -88,7 +88,9 @@
     <Compile Include="Tables\Configuration.cs" />
     <Compile Include="Tables\TimeEntry.cs" />
     <Compile Include="TimeEntryViewModel.cs" />
+    <Compile Include="Truncator.cs" />
     <Compile Include="UnitTest\StatusViewModelTest.cs" />
+    <Compile Include="UnitTest\TruncatorTest.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

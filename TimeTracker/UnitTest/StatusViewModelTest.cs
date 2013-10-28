@@ -80,6 +80,19 @@ namespace TimeTracker.UnitTest
         [TestCase(0, 00, 0, 25, 0, 30)]
         [TestCase(0, 00, 0, 40, 0, 45)]
         [TestCase(0, 00, 0, 55, 1, 00)]
+        [TestCase(0, 15, 0, 00, 0, -15)]
+        [TestCase(0, 30, 0, 00, 0, -30)]
+        [TestCase(0, 45, 0, 00, 0, -45)]
+        [TestCase(1, 00, 0, 00, -1, 00)]
+        [TestCase(0, 05, 0, 00, 0, 00)]
+        [TestCase(0, 20, 0, 00, 0, -15)]
+        [TestCase(0, 35, 0, 00, 0, -30)]
+        [TestCase(0, 50, 0, 00, 0, -45)]
+        [TestCase(1, 05, 0, 00, -1, 00)]
+        [TestCase(0, 10, 0, 00, 0, -15)]
+        [TestCase(0, 25, 0, 00, 0, -30)]
+        [TestCase(0, 40, 0, 00, 0, -45)]
+        [TestCase(0, 55, 0, 00, -1, 00)]
         public void CurrentTimeRounded_IntervalsWithDifferentLength_CorrectlyRoundedIntervalReturned(int startHours, int startMinutes, int endHours, int endMinutes, int diffHours, int diffMinutes)
         {
             var timeEntries = new[] {
