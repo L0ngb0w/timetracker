@@ -10,8 +10,7 @@ namespace TimeTracker.Tables
     [Table(IfNotExists = true)]
     [PrimaryKey("EntryId", AutoIncrement = true)]
     [Index("Date")]
-    //[ForeignKey(Columns = new[] { "Date" }, ForeignTable = "Collection", ForeignColumns = new[] { "Date" })]
-    class TimeEntry
+    public class TimeEntry
     {
         [Column(NotNull = true, Unique = true, TypeAffinity = TypeAffinity.Integer)]
         public readonly long EntryId;

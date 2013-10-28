@@ -91,6 +91,9 @@
     <Compile Include="Truncator.cs" />
     <Compile Include="UnitTest\StatusViewModelTest.cs" />
     <Compile Include="UnitTest\TruncatorTest.cs" />
+    <Compile Include="ListInterval.xaml.cs">
+      <DependentUpon>ListInterval.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -103,6 +106,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ListInterval.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -20,6 +20,7 @@ namespace TimeTracker
         public StatusViewModel(ObservableCollection<TimeEntryViewModel> timeEntries)
         {
             this.timeEntries = timeEntries;
+          currentDate = DateTime.Today;
         }
 
         public TimeSpan CurrentTimeActual

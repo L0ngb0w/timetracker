@@ -5,7 +5,6 @@ TODO
 ===========
 * Bug: Pause/Play button does not update icon
 * Editable Start and End time
-* Text edit TextBox follows column width
 * Commit/cancel buttons on edit TextBoxes
 * Time of flex break-even
 * Configurable date formats
@@ -19,8 +18,10 @@ TODO
 * Display current task description in status header
 * Make tree view that correlates entries with equal description
 * Make description edit TextBox into editable ComboBox that lists earlier tasks
+* Posibility to delete entry
 
 Done
 ===========
 * Color on rounded flex time
 * Bug: Flex rounded is not updated
+* Text edit TextBox follows column width

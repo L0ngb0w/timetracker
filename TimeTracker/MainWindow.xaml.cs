@@ -30,15 +30,19 @@ namespace TimeTracker
         BackgroundWorker populate = new BackgroundWorker();
 
         StatusViewModel status;
-        ObservableCollection<TimeEntryViewModel> timeEntries = new ObservableCollection<TimeEntryViewModel>();
+        public ObservableCollection<TimeEntryViewModel> TimeEntries { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            status = new StatusViewModel(timeEntries);
-            status.CurrentDate = DateTime.Today;
+          TimeEntries = new ObservableCollection<TimeEntryViewModel>();
+            TimeEntries.CollectionChanged += OnTimeEntryCollectionChanged;
 
+            status = new StatusViewModel(TimeEntries);
+            //status.CurrentDate = DateTime.Today;
+
+            ListEntry.DataContext = this;
             TimeCurrentRounded.DataContext = status;
             TimeCurrentActual.DataContext = status;
             TimeTotoalRounded.DataContext = status;
@@ -49,8 +53,6 @@ namespace TimeTracker
             CurrentYear.DataContext = status;
             ButtonPauseEntry.DataContext = status;
             TextBlockGotoLaterDate.DataContext = status;
-
-            timeEntries.CollectionChanged += OnTimeEntryCollectionChanged;
 
             var applicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var path = System.IO.Path.Combine(applicationData, "TimeTracker");
@@ -84,7 +86,8 @@ namespace TimeTracker
             this.Width = configuration.WindowWidth;
             this.Height = configuration.WindowHeight;
 
-            ListEntry.ItemsSource = timeEntries;
+            //ListEntry.ItemsSource = timeEntries;
+          //ListEntry.ListEntry.ItemsSource = timeEntries;
 
             timer = new Timer(1000);
             timer.Elapsed += OnTimerElapsed;
@@ -151,7 +154,7 @@ namespace TimeTracker
         {
             try
             {
-                Dispatcher.BeginInvoke(new Action(() => timeEntries.Clear()));
+                Dispatcher.BeginInvoke(new Action(() => TimeEntries.Clear()));
 
                 var database = (IDatabase)e.Argument;
                 using (var query = database.Prepare("SELECT EntryId, Date, TimeStart, TimeEnd, Text FROM [TimeEntry] WHERE Date = @Date ORDER BY TimeStart, TimeEnd"))
@@ -162,7 +165,7 @@ namespace TimeTracker
                     while ((result = query.Step()) == StepResult.Row)
                     {
                         var entry = new Tables.TimeEntry(query.ColumnLong(0).Value, query.ColumnLong(1).Value, query.ColumnLong(2).Value, query.ColumnLong(3), query.ColumnText(4));
-                        Dispatcher.BeginInvoke(new Action(() => timeEntries.Add(new TimeEntryViewModel(entry))));
+                        Dispatcher.BeginInvoke(new Action(() => TimeEntries.Add(new TimeEntryViewModel(entry))));
                     }
                 }
             }
@@ -214,7 +217,7 @@ namespace TimeTracker
             var date = status.CurrentDate.ToBinary();
             var startTime = time.ToBinary();
 
-            string text = isContinue ? timeEntries.Last().Text : string.Empty;
+            string text = isContinue ? TimeEntries.Last().Text : string.Empty;
 
             using (var statement = database.Prepare("INSERT INTO [TimeEntry] (Date, TimeStart, Text) VALUES (@Date, @TimeStart, @Text)"))
             {
@@ -226,15 +229,15 @@ namespace TimeTracker
             }
 
             var entry = new Tables.TimeEntry(database.LastInsertRowid, date, startTime, (long?)null, text);
-            timeEntries.Add(new TimeEntryViewModel(entry));
+            TimeEntries.Add(new TimeEntryViewModel(entry));
         }
 
         private void TerminateCurrent()
         {
             var time = DateTime.Now;
-            if (timeEntries.Any())
+            if (TimeEntries.Any())
             {
-                var last = timeEntries.Last();
+                var last = TimeEntries.Last();
                 if (!last.EndTime.HasValue)
                 {
                     last.EndTime = time;
@@ -297,13 +300,6 @@ namespace TimeTracker
 
             DisableForUpdate();
             populate.RunWorkerAsync(database);
-        }
-
-        private void TextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            var textBox = sender as TextBox;
-            if (textBox != null && textBox.Visibility == System.Windows.Visibility.Visible)
-                textBox.Focus();
         }
     }
 }

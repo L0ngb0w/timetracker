@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TimeTracker
 {
-    class TimeEntryViewModel : INotifyPropertyChanged
+    public class TimeEntryViewModel : INotifyPropertyChanged
     {
         readonly Tables.TimeEntry entry;
 
