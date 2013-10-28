@@ -75,6 +75,14 @@ namespace TimeTracker
             }
         }
 
+        public bool IsFlexRoundedNegative
+        {
+          get
+          {
+              return TotalTimeRounded < flex;
+          }
+        }
+
         public TimeSpan FlexActual
         {
             get

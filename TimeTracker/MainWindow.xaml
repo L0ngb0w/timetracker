@@ -54,7 +54,20 @@
             <TextBlock Name="TimeCurrentActual" FontFamily="Consolas" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="5" Grid.Row="1" Text="{Binding Path=CurrentTimeActual, StringFormat=hh\\:mm}" />
             <TextBlock Name="TimeTotoalRounded" FontFamily="Consolas" FontSize="30" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Column="7" Grid.Row="0" Text="{Binding Path=TotalTimeRounded, StringFormat=hh\\:mm}" />
             <TextBlock Name="TimeTotalActual" FontFamily="Consolas" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="7" Grid.Row="1" Text="{Binding Path=TotalTimeActual, StringFormat=hh\\:mm}" />
-            <TextBlock Name="TimeFlexRounded" FontFamily="Consolas" FontSize="30" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Column="9" Grid.Row="0" Text="{Binding Path=FlexRounded, StringFormat=hh\\:mm}" />
+            <TextBlock Name="TimeFlexRounded" FontFamily="Consolas" FontSize="30" VerticalAlignment="Bottom" HorizontalAlignment="Center" Grid.Column="9" Grid.Row="0" Text="{Binding Path=FlexRounded, StringFormat=hh\\:mm}" >
+                <TextBlock.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=IsFlexRoundedNegative}" Value="True">
+                                <Setter Property="TextBlock.Foreground" Value="Red" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Path=IsFlexRoundedNegative}" Value="False">
+                                <Setter Property="TextBlock.Foreground" Value="Green" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
             <TextBlock Name="TimeFlexActual" FontFamily="Consolas" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="9" Grid.Row="1" Text="{Binding Path=FlexActual, StringFormat=hh\\:mm}">
                 <TextBlock.Style>
                     <Style>
