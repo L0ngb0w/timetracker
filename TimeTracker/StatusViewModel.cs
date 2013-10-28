@@ -128,6 +128,7 @@ namespace TimeTracker
             FirePropertyChanged("TotalTimeRounded");
             FirePropertyChanged("TotalTimeActual");
             FirePropertyChanged("FlexRounded");
+            FirePropertyChanged("IsFlexRoundedNegative");
             FirePropertyChanged("FlexActual");
             FirePropertyChanged("IsFlexActualNegative");
         }
