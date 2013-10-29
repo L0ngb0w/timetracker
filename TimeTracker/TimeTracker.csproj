@@ -147,6 +147,30 @@
   <ItemGroup>
     <Resource Include="Clock alt.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Cyan\check_12x10.png" />
+    <Resource Include="Images\Cyan\check_16x13.png" />
+    <Resource Include="Images\Cyan\check_24x19.png" />
+    <Resource Include="Images\Cyan\check_32x26.png" />
+    <Resource Include="Images\Cyan\check_8x6.png" />
+    <Resource Include="Images\Cyan\x_11x11.png" />
+    <Resource Include="Images\Cyan\x_14x14.png" />
+    <Resource Include="Images\Cyan\x_21x21.png" />
+    <Resource Include="Images\Cyan\x_28x28.png" />
+    <Resource Include="Images\Cyan\x_7x7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\LightGray\check_12x10.png" />
+    <Resource Include="Images\LightGray\check_16x13.png" />
+    <Resource Include="Images\LightGray\check_24x19.png" />
+    <Resource Include="Images\LightGray\check_32x26.png" />
+    <Resource Include="Images\LightGray\check_8x6.png" />
+    <Resource Include="Images\LightGray\x_11x11.png" />
+    <Resource Include="Images\LightGray\x_14x14.png" />
+    <Resource Include="Images\LightGray\x_21x21.png" />
+    <Resource Include="Images\LightGray\x_28x28.png" />
+    <Resource Include="Images\LightGray\x_7x7.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

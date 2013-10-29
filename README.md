@@ -6,7 +6,6 @@ TODO
 * Bug: Pause/Play button does not update icon
 * Editable Start and End time
 * Commit/cancel buttons on edit TextBoxes
-* Time of flex break-even
 * Configurable date formats
 * Configurable Work-day length
 * Configurable window position
@@ -25,3 +24,4 @@ Done
 * Bug: Flex rounded is not updated
 * Text edit TextBox follows column width
 * Display interval length in listview
+* Time of flex break-even
