@@ -20,7 +20,7 @@ namespace TimeTracker
         public StatusViewModel(ObservableCollection<TimeEntryViewModel> timeEntries)
         {
             this.timeEntries = timeEntries;
-          currentDate = DateTime.Today;
+            currentDate = TimeService.Date;
         }
 
         public TimeSpan CurrentTimeActual
@@ -78,10 +78,10 @@ namespace TimeTracker
 
         public bool IsFlexRoundedNegative
         {
-          get
-          {
-              return TotalTimeRounded < flex;
-          }
+            get
+            {
+                return TotalTimeRounded < flex;
+            }
         }
 
         public TimeSpan FlexActual
@@ -104,7 +104,7 @@ namespace TimeTracker
         {
             get
             {
-                return DateTime.Now + FlexActual;
+                return TimeService.Time + FlexActual;
             }
         }
 
@@ -121,7 +121,7 @@ namespace TimeTracker
 
         public bool CanGotoLaterDate
         {
-            get { return currentDate != DateTime.Today; }
+            get { return currentDate != TimeService.Date; }
         }
 
         public bool IsRunning

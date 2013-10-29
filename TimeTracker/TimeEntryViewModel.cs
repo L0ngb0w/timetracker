@@ -56,7 +56,7 @@ namespace TimeTracker
                 if (EndTime.HasValue)
                     end = EndTime.Value;
                 else
-                    end = DateTime.Now;
+                    end = TimeService.Time;
 
                 return end - StartTime;
             }

@@ -36,11 +36,10 @@ namespace TimeTracker
         {
             InitializeComponent();
 
-          TimeEntries = new ObservableCollection<TimeEntryViewModel>();
+            TimeEntries = new ObservableCollection<TimeEntryViewModel>();
             TimeEntries.CollectionChanged += OnTimeEntryCollectionChanged;
 
             status = new StatusViewModel(TimeEntries);
-            //status.CurrentDate = DateTime.Today;
 
             ListEntry.DataContext = this;
             TimeCurrentRounded.DataContext = status;
@@ -88,7 +87,7 @@ namespace TimeTracker
             this.Height = configuration.WindowHeight;
 
             //ListEntry.ItemsSource = timeEntries;
-          //ListEntry.ListEntry.ItemsSource = timeEntries;
+            //ListEntry.ListEntry.ItemsSource = timeEntries;
 
             timer = new Timer(1000);
             timer.Elapsed += OnTimerElapsed;
@@ -203,10 +202,10 @@ namespace TimeTracker
 
         void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-          foreach (var entry in TimeEntries)
-          {
-            entry.Refresh();
-          }
+            foreach (var entry in TimeEntries)
+            {
+                entry.Refresh();
+            }
 
             status.Refresh();
         }
@@ -219,7 +218,7 @@ namespace TimeTracker
 
         private void AddNewEntry(bool isContinue)
         {
-            var time = DateTime.Now;
+            var time = TimeService.Time;
             var date = status.CurrentDate.ToBinary();
             var startTime = time.ToBinary();
 
@@ -240,7 +239,7 @@ namespace TimeTracker
 
         private void TerminateCurrent()
         {
-            var time = DateTime.Now;
+            var time = TimeService.Time;
             if (TimeEntries.Any())
             {
                 var last = TimeEntries.Last();
