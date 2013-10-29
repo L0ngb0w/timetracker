@@ -202,6 +202,11 @@ namespace TimeTracker
 
         void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
+          foreach (var entry in TimeEntries)
+          {
+            entry.Refresh();
+          }
+
             status.Refresh();
         }
 

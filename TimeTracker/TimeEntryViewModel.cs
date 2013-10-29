@@ -72,5 +72,11 @@ namespace TimeTracker
                     PropertyChanged(this, new PropertyChangedEventArgs("Text"));
             }
         }
+
+      public void Refresh()
+      {
+        if (PropertyChanged != null)
+          PropertyChanged(this, new PropertyChangedEventArgs("Difference"));
+      }
     }
 }
