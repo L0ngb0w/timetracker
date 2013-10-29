@@ -49,6 +49,7 @@ namespace TimeTracker
             TimeTotalActual.DataContext = status;
             TimeFlexRounded.DataContext = status;
             TimeFlexActual.DataContext = status;
+            TimeToWorkEnd.DataContext = status;
             CurrentTime.DataContext = status;
             CurrentYear.DataContext = status;
             ButtonPauseEntry.DataContext = status;

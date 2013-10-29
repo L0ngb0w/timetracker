@@ -100,6 +100,14 @@ namespace TimeTracker
             }
         }
 
+        public DateTime TimeOfWorkEnd
+        {
+            get
+            {
+                return DateTime.Now + FlexActual;
+            }
+        }
+
         public DateTime CurrentDate
         {
             get { return currentDate; }
@@ -130,6 +138,7 @@ namespace TimeTracker
             FirePropertyChanged("FlexRounded");
             FirePropertyChanged("IsFlexRoundedNegative");
             FirePropertyChanged("FlexActual");
+            FirePropertyChanged("TimeOfWorkEnd");
             FirePropertyChanged("IsFlexActualNegative");
         }
 
