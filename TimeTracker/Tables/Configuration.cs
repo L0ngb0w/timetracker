@@ -15,5 +15,11 @@ namespace TimeTracker.Tables
 
         [Column(NotNull = true, TypeAffinity = TypeAffinity.Real)]
         public double WindowHeight;
+
+        [Column(NotNull = true, Default = "0", TypeAffinity = TypeAffinity.Real)]
+        public double WindowX;
+
+        [Column(NotNull = true, Default = "0", TypeAffinity = TypeAffinity.Real)]
+        public double WindowY;
     }
 }

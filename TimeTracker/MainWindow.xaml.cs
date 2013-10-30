@@ -66,17 +66,21 @@ namespace TimeTracker
             database.CreateTable<Tables.TimeEntry>();
             database.CreateTable<Tables.Configuration>();
 
-            using (var query = database.Prepare("SELECT WindowWidth, WindowHeight FROM [Configuration]"))
+            using (var query = database.Prepare("SELECT WindowWidth, WindowHeight, WindowX, WindowY FROM [Configuration]"))
             {
                 if (query.Step() == StepResult.Row)
                 {
                     configuration.WindowWidth = query.ColumnDouble(0).Value;
                     configuration.WindowHeight = query.ColumnDouble(1).Value;
+                    configuration.WindowX = query.ColumnDouble(2).Value;
+                    configuration.WindowY = query.ColumnDouble(3).Value;
                 }
                 else
                 {
                     configuration.WindowWidth = this.Width;
                     configuration.WindowHeight = this.Height;
+                    configuration.WindowX = this.Left;
+                    configuration.WindowY = this.Top;
                 }
             }
         }
@@ -85,9 +89,8 @@ namespace TimeTracker
         {
             this.Width = configuration.WindowWidth;
             this.Height = configuration.WindowHeight;
-
-            //ListEntry.ItemsSource = timeEntries;
-            //ListEntry.ListEntry.ItemsSource = timeEntries;
+            this.Left = configuration.WindowX;
+            this.Top = configuration.WindowY;
 
             timer = new Timer(1000);
             timer.Elapsed += OnTimerElapsed;
@@ -111,10 +114,12 @@ namespace TimeTracker
                     statement.Step();
                 }
 
-                using (var statement = database.Prepare("INSERT INTO [Configuration] (WindowWidth, WindowHeight) VALUES (@WindowWidth, @WindowHeight)"))
+                using (var statement = database.Prepare("INSERT INTO [Configuration] (WindowWidth, WindowHeight, WindowX, WindowY) VALUES (@WindowWidth, @WindowHeight, @WindowX, @WindowY)"))
                 {
                     statement.BindDouble("@WindowWidth", this.ActualWidth);
                     statement.BindDouble("@WindowHeight", this.ActualHeight);
+                    statement.BindDouble("@WindowX", this.Left);
+                    statement.BindDouble("@WindowY", this.Top);
 
                     statement.Step();
                 }

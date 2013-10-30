@@ -17,6 +17,8 @@ namespace TimeTracker.Storage.Markup
 
         public bool Unique { get; set; }
 
+        public string Default { get; set; }
+
         public ColumnAttribute(string name)
         {
             Name = name;

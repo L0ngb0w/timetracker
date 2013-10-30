@@ -289,6 +289,13 @@ namespace TimeTracker.Storage.Sqlite
                             clause.Append(" ").Append(constraintClause);
                     }
 
+                  if (!string.IsNullOrEmpty(column.Default))
+                  {
+                    clause
+                      .Append(" DEFAULT ")
+                      .Append(column.Default);
+                  }
+
                     columns.Add(columnName, clause.ToString());
                 }
             }
