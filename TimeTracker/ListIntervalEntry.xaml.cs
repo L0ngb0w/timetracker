@@ -16,13 +16,24 @@ using System.Windows.Shapes;
 namespace TimeTracker
 {
   /// <summary>
-  /// Interaction logic for ListInterval.xaml
+  /// Interaction logic for ListIntervalEntry.xaml
   /// </summary>
-  public partial class ListInterval : UserControl
+  public partial class ListIntervalEntry : UserControl
   {
-    public ListInterval()
+    public ListIntervalEntry()
     {
       InitializeComponent();
+    }
+
+    private void TextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+      var textBox = sender as TextBox;
+      if (textBox != null && textBox.Visibility == Visibility.Visible)
+        textBox.Focus();
+    }
+
+    void OnDescriptionCommit(object sender, RoutedEventArgs e)
+    {
     }
   }
 }

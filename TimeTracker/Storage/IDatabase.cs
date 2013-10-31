@@ -22,6 +22,29 @@ namespace TimeTracker.Storage
         MemoryUsed = 1 << 10,
     }
 
+  public enum ConflictBehavior
+  {
+    /// <summary>
+    /// Does not create the table. Equivalent to specifying IF NOT EXISTS in the create table statement.
+    /// </summary>
+    DoNothing,
+
+    /// <summary>
+    /// Throw an exception if the table already exists.
+    /// </summary>
+    ThrowError,
+
+    /// <summary>
+    /// Drop the existing and create the new table. This will delete all data in the existing table.
+    /// </summary>
+    DropExisting,
+
+    /// <summary>
+    /// Update the existing table by creating the new table, copy the existing data to it and then drop the existing table.
+    /// </summary>
+    UpdateExisting,
+  }
+
     public struct Status
     {
         public readonly long Current;
@@ -78,6 +101,8 @@ namespace TimeTracker.Storage
 
         ITransaction BeginTransaction(TransactionBehavior behavior);
 
-        void CreateTable<T>() where T : class;
+        void CreateTable<T>(/*ConflictBehavior conflictBehavior*/) where T : class;
+
+        void CreateTable(Type tableType/*, ConflictBehavior conflictBehavior*/);
     }
 }

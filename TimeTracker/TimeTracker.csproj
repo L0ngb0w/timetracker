@@ -63,6 +63,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ListIntervalEntry.xaml.cs">
+      <DependentUpon>ListIntervalEntry.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StatusViewModel.cs" />
     <Compile Include="Storage\Constraint.cs" />
     <Compile Include="Storage\IDatabase.cs" />
@@ -95,6 +98,10 @@
     <Compile Include="ListInterval.xaml.cs">
       <DependentUpon>ListInterval.xaml</DependentUpon>
     </Compile>
+    <Page Include="ListIntervalEntry.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

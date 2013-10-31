@@ -170,12 +170,12 @@ namespace TimeTracker.Storage.Sqlite
             return new SqliteTransaction(this, behavior);
         }
 
-        public void CreateTable<T>() where T : class
+        public void CreateTable<T>(/*ConflictBehavior conflictBehavior*/) where T : class
         {
-            CreateTable(typeof(T));
+            CreateTable(typeof(T)/*, conflictBehavior*/);
         }
 
-        public void CreateTable(Type tableType)
+        public void CreateTable(Type tableType/*, ConflictBehavior conflictBehavior*/)
         {
             var query = new StringBuilder();
 

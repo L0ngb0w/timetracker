@@ -8,7 +8,6 @@ TODO
 * Commit/cancel buttons on edit TextBoxes
 * Configurable date formats
 * Configurable Work-day length
-* Configurable window position
 * Configurable window state (normal, maximized, minimized)
 * Configurable rounding algorithm (round to 15, round to 5)
 * Visual indication of activity (blinker, spinner, something...)
@@ -17,6 +16,7 @@ TODO
 * Make tree view that correlates entries with equal description
 * Make description edit TextBox into editable ComboBox that lists earlier tasks
 * Posibility to delete entry
+* Proper handling of move past midnight
 
 Done
 ===========
@@ -25,3 +25,4 @@ Done
 * Text edit TextBox follows column width
 * Display interval length in listview
 * Time of flex break-even
+* Configurable window position
