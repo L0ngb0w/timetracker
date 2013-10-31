@@ -34,6 +34,8 @@ namespace TimeTracker
 
     void OnDescriptionCommit(object sender, RoutedEventArgs e)
     {
+        var binding = TextBoxDescription.GetBindingExpression(TextBox.TextProperty);
+        binding.UpdateSource();
     }
   }
 }

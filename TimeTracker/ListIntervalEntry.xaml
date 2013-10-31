@@ -84,7 +84,7 @@
                 <!--<Image Source="{StaticResource ImageNeutralCancel}" Stretch="None" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                             </Button>-->
             </StackPanel>
-            <TextBox x:Name="TextBoxDescription" Text="{Binding Path=TextBox.Text, UpdateSourceTrigger=Explicit}" HorizontalAlignment="Stretch" IsVisibleChanged="TextBox_IsVisibleChanged" />
+            <TextBox x:Name="TextBoxDescription" Text="{Binding Path=TextBox.Text, Mode=TwoWay, UpdateSourceTrigger=Explicit}" HorizontalAlignment="Stretch" IsVisibleChanged="TextBox_IsVisibleChanged" />
         </DockPanel>
         <TextBlock Text="{Binding Path=Text}" VerticalAlignment="Center" >
             <TextBlock.Style>

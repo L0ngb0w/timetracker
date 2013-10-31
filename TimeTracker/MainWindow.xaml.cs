@@ -193,15 +193,18 @@ namespace TimeTracker
 
         void OnTimeEntryPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var entry = (TimeEntryViewModel)sender;
-            using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text WHERE EntryId = @EntryId"))
+            if (e.PropertyName == "Text")
             {
-                statement.BindLong("@EntryId", entry.Entry.EntryId);
-                statement.BindLong("@TimeStart", entry.Entry.TimeStart);
-                statement.BindLong("@TimeEnd", entry.Entry.TimeEnd);
-                statement.BindText("@Text", entry.Entry.Text ?? string.Empty);
+                var entry = (TimeEntryViewModel)sender;
+                using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text WHERE EntryId = @EntryId"))
+                {
+                    statement.BindLong("@EntryId", entry.Entry.EntryId);
+                    statement.BindLong("@TimeStart", entry.Entry.TimeStart);
+                    statement.BindLong("@TimeEnd", entry.Entry.TimeEnd);
+                    statement.BindText("@Text", entry.Entry.Text ?? string.Empty);
 
-                statement.Step();
+                    statement.Step();
+                }
             }
         }
 
