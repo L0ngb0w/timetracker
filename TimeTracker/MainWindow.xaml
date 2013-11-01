@@ -96,15 +96,7 @@
             </StackPanel>
         </Grid>
         <Grid>
-            <!--<Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>-->
             <tt:ListInterval x:Name="ListEntry" />
-            <!--<GridSplitter/>
-            <TreeView Name="TreeEntry" Grid.Column="1" Margin="1,4,4,4">
-
-            </TreeView>-->
         </Grid>
     </DockPanel>
 </Window>

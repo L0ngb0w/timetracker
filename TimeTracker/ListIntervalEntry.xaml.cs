@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,19 @@ namespace TimeTracker
   /// </summary>
   public partial class ListIntervalEntry : UserControl
   {
+    public static readonly DependencyProperty IsInEditModeProperty = DependencyProperty.Register("IsInEditMode", typeof(bool), typeof(ListIntervalEntry));
+
+    public bool IsInEditMode
+    {
+      get { return (bool)GetValue(IsInEditModeProperty); }
+      set { SetValue(IsInEditModeProperty, value); }
+    }
+
     public ListIntervalEntry()
     {
       InitializeComponent();
+
+      IsInEditMode = false;
     }
 
     private void TextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -34,8 +45,23 @@ namespace TimeTracker
 
     void OnDescriptionCommit(object sender, RoutedEventArgs e)
     {
-        var binding = TextBoxDescription.GetBindingExpression(TextBox.TextProperty);
-        binding.UpdateSource();
+      var binding = TextBoxDescription.GetBindingExpression(TextBox.TextProperty);
+      binding.UpdateSource();
+
+      IsInEditMode = false;
+    }
+
+    void OnDescriptionCancel(object sender, RoutedEventArgs e)
+    {
+      IsInEditMode = false;
+    }
+
+    void ListIntervalEntry_OnMouseUp(object sender, MouseButtonEventArgs e)
+    {
+      var binding = TextBoxDescription.GetBindingExpression(TextBox.TextProperty);
+      binding.UpdateTarget();
+
+      IsInEditMode = true;
     }
   }
 }

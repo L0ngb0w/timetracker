@@ -3,8 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:tt="clr-namespace:TimeTracker"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             MouseUp="ListIntervalEntry_OnMouseUp"
+             >
 
     <UserControl.Resources>
         <BitmapImage x:Key="ImageNeutralOk" UriSource="pack://application:,,,/Images/LightGray/check_16x13.png" />
@@ -64,36 +67,29 @@
             <DockPanel.Style>
                 <Style>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="True" >
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="True" >
                             <Setter Property="TextBox.Visibility" Value="Visible" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="False" >
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="False" >
                             <Setter Property="TextBox.Visibility" Value="Hidden" />
-
-                            <!--<Setter Property="TextBox.Text" Value="" />-->
-
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </DockPanel.Style>
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="2,0,0,0">
                 <Button x:Name="ButtonDescriptionCommit" Width="20" Height="20" Style="{StaticResource FlatButtonOkStyle}" Margin="0,0,1,0" Click="OnDescriptionCommit" />
-                <!--<Image Source="{StaticResource ImageNeutralOk}" Stretch="None" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            </Button>-->
-                <Button Width="20" Height="20" Style="{StaticResource FlatButtonCancelStyle}" Margin="0,0,1,0" />
-                <!--<Image Source="{StaticResource ImageNeutralCancel}" Stretch="None" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            </Button>-->
+                <Button Width="20" Height="20" Style="{StaticResource FlatButtonCancelStyle}" Margin="0,0,1,0" Click="OnDescriptionCancel" />
             </StackPanel>
-            <TextBox x:Name="TextBoxDescription" Text="{Binding Path=TextBox.Text, Mode=TwoWay, UpdateSourceTrigger=Explicit}" HorizontalAlignment="Stretch" IsVisibleChanged="TextBox_IsVisibleChanged" />
+            <TextBox x:Name="TextBoxDescription" Text="{Binding Path=Text, Mode=TwoWay, UpdateSourceTrigger=Explicit}" HorizontalAlignment="Stretch" IsVisibleChanged="TextBox_IsVisibleChanged" />
         </DockPanel>
         <TextBlock Text="{Binding Path=Text}" VerticalAlignment="Center" >
             <TextBlock.Style>
                 <Style>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="False" >
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="False" >
                             <Setter Property="TextBlock.Visibility" Value="Visible" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="True" >
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="True" >
                             <Setter Property="TextBlock.Visibility" Value="Hidden" />
                         </DataTrigger>
                     </Style.Triggers>
