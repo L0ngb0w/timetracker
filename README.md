@@ -5,7 +5,6 @@ TODO
 ===========
 * Bug: Pause/Play button does not update icon
 * Editable Start and End time
-* Commit/cancel buttons on edit TextBoxes
 * Configurable date formats
 * Configurable Work-day length
 * Configurable window state (normal, maximized, minimized)
@@ -17,6 +16,7 @@ TODO
 * Make description edit TextBox into editable ComboBox that lists earlier tasks
 * Posibility to delete entry
 * Proper handling of move past midnight
+* Commit edited interval description on enter press.
 
 Done
 ===========
@@ -26,3 +26,4 @@ Done
 * Display interval length in listview
 * Time of flex break-even
 * Configurable window position
+* Commit/cancel buttons on edit TextBoxes
