@@ -193,19 +193,26 @@ namespace TimeTracker
 
         void OnTimeEntryPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Text")
+            //if (e.PropertyName == "Text")
+            //{
+            switch (e.PropertyName)
             {
-                var entry = (TimeEntryViewModel)sender;
-                using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text WHERE EntryId = @EntryId"))
-                {
-                    statement.BindLong("@EntryId", entry.Entry.EntryId);
-                    statement.BindLong("@TimeStart", entry.Entry.TimeStart);
-                    statement.BindLong("@TimeEnd", entry.Entry.TimeEnd);
-                    statement.BindText("@Text", entry.Entry.Text ?? string.Empty);
+                case "Text":
+                case "TimeStart":
+                case "TimeEnd":
+                    var entry = (TimeEntryViewModel)sender;
+                    using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text WHERE EntryId = @EntryId"))
+                    {
+                        statement.BindLong("@EntryId", entry.Entry.EntryId);
+                        statement.BindLong("@TimeStart", entry.Entry.TimeStart);
+                        statement.BindLong("@TimeEnd", entry.Entry.TimeEnd);
+                        statement.BindText("@Text", entry.Entry.Text ?? string.Empty);
 
-                    statement.Step();
-                }
+                        statement.Step();
+                    }
+                    break;
             }
+            //}
         }
 
         void OnTimerElapsed(object sender, ElapsedEventArgs e)
@@ -220,8 +227,13 @@ namespace TimeTracker
 
         private void OnButtonNewClicked(object sender, RoutedEventArgs e)
         {
-            TerminateCurrent();
-            AddNewEntry(false);
+            using (var transaction = database.BeginTransaction())
+            {
+                TerminateCurrent();
+                AddNewEntry(false);
+
+                transaction.Commit();
+            }
         }
 
         private void AddNewEntry(bool isContinue)
@@ -254,6 +266,14 @@ namespace TimeTracker
                 if (!last.EndTime.HasValue)
                 {
                     last.EndTime = time;
+
+                    using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeEnd = @TimeEnd WHERE EntryId = @EntryId"))
+                    {
+                        statement.BindLong("@EntryId", last.Entry.EntryId);
+                        statement.BindLong("@TimeEnd", last.Entry.TimeEnd);
+
+                        statement.Step();
+                    }
                 }
             }
         }
