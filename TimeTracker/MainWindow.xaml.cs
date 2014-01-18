@@ -145,11 +145,6 @@ namespace TimeTracker
                     MessageBox.Show(this, exception.Message, this.Title + " - Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-                //if (timeEntries.Any())
-                //    status.IsRunning = timeEntries.Last().EndTime.HasValue;
-                //else
-                //    status.IsRunning = false;
-
                 status.Refresh();
                 EnableAfterUpdate();
             }));
