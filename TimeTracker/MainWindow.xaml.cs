@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -34,18 +35,14 @@ namespace TimeTracker
 
     public ObservableCollection<TaskViewModel> Tasks { get; set; }
 
-    //public ObservableCollection<TimeEntryViewModel> TimeEntries { get; set; }
-
     public MainWindow()
     {
       InitializeComponent();
 
-      //TimeEntries = new ObservableCollection<TimeEntryViewModel>();
-      //TimeEntries.CollectionChanged += OnTimeEntryCollectionChanged;
       Tasks = new ObservableCollection<TaskViewModel>();
       Tasks.CollectionChanged += OnTaskCollectionChanged;
 
-      status = new StatusViewModel(TimeEntries);
+      status = new StatusViewModel(Tasks);
 
       ListEntry.DataContext = this;
       TimeCurrentRounded.DataContext = status;
@@ -179,7 +176,7 @@ namespace TimeTracker
 
         while (taskQuery.Step() == StepResult.Row)
         {
-          var task = new Tables.Task(taskQuery.ColumnLong(0).Value, taskQuery.ColumnLong(1).Value, taskQuery.ColumnText(2));
+          var task = new Tables.Task(taskQuery.ColumnLong(0) ?? -1, taskQuery.ColumnLong(1) ?? -1, taskQuery.ColumnText(2));
           var entries = QueryTimeEntries(timeEntryQuery, task);
 
           Dispatcher.BeginInvoke(new Action(() =>
@@ -217,28 +214,55 @@ namespace TimeTracker
 
       while (query.Step() == StepResult.Row)
       {
-        var entry = new Tables.TimeEntry(query.ColumnLong(0).Value, query.ColumnLong(1).Value, query.ColumnLong(2).Value, query.ColumnLong(3), query.ColumnText(4));
+        var entry = new Tables.TimeEntry(query.ColumnLong(0) ?? -1, task.TaskId, query.ColumnLong(1) ?? -1, query.ColumnLong(2), query.ColumnText(3));
         entries.Add(entry);
       }
 
       return entries;
     }
 
-    void OnTimeEntryCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    void OnTaskCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-      if (e.NewItems != null)
+      if (e.NewItems == null)
+        return;
+
+      foreach (TaskViewModel item in e.NewItems)
       {
-        foreach (TimeEntryViewModel item in e.NewItems)
-        {
-          item.PropertyChanged += OnTimeEntryPropertyChanged;
-        }
+        item.PropertyChanged += OnTaskPropertyChanged;
+        item.TimeEntries.CollectionChanged += OnTimeEntryCollectionChanged;
+      }
+    }
+
+    void OnTimeEntryCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+      if (e.NewItems == null)
+        return;
+
+      foreach (TimeEntryViewModel item in e.NewItems)
+      {
+        item.PropertyChanged += OnTimeEntryPropertyChanged;
+      }
+    }
+
+    void OnTaskPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+      switch (e.PropertyName)
+      {
+        case "Text":
+          var task = (TaskViewModel)sender;
+          using (var statement = database.Prepare("UPDATE [Task] Set Text = @Text WHERE TaskId = @TaskId"))
+          {
+            statement.BindLong("@TaskId", task.Task.TaskId);
+            statement.BindText("@Text", task.Task.Text ?? string.Empty);
+
+            statement.Step();
+          }
+          break;
       }
     }
 
     void OnTimeEntryPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-      //if (e.PropertyName == "Text")
-      //{
       switch (e.PropertyName)
       {
         case "Text":
@@ -256,7 +280,6 @@ namespace TimeTracker
           }
           break;
       }
-      //}
     }
 
     void OnTimerElapsed(object sender, ElapsedEventArgs e)
@@ -278,6 +301,14 @@ namespace TimeTracker
 
         transaction.Commit();
       }
+    }
+
+    private void OnButtonPauseClicked(object sender, RoutedEventArgs e)
+    {
+      if (status.IsRunning)
+        TerminateCurrent();
+      else
+        AddNewEntry(true);
     }
 
     private void AddNewEntry(bool isContinue)
@@ -320,14 +351,6 @@ namespace TimeTracker
           }
         }
       }
-    }
-
-    private void OnButtonPauseClicked(object sender, RoutedEventArgs e)
-    {
-      if (status.IsRunning)
-        TerminateCurrent();
-      else
-        AddNewEntry(true);
     }
 
     private void DisableForUpdate()
