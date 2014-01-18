@@ -89,11 +89,14 @@
     <Compile Include="Storage\Sqlite\UnitTest\SqliteStatementTest.cs" />
     <Compile Include="Storage\Sqlite\UnitTest\SqliteTransactionTest.cs" />
     <Compile Include="Tables\Configuration.cs" />
+    <Compile Include="Tables\Task.cs" />
     <Compile Include="Tables\TimeEntry.cs" />
+    <Compile Include="TaskViewModel.cs" />
     <Compile Include="TimeEntryViewModel.cs" />
     <Compile Include="TimeService.cs" />
     <Compile Include="Truncator.cs" />
     <Compile Include="UnitTest\StatusViewModelTest.cs" />
+    <Compile Include="UnitTest\TaskViewModelTest.cs" />
     <Compile Include="UnitTest\TruncatorTest.cs" />
     <Compile Include="ListInterval.xaml.cs">
       <DependentUpon>ListInterval.xaml</DependentUpon>
