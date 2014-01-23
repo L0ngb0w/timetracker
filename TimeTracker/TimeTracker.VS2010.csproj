@@ -1,21 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F24287B6-7067-453E-9886-93377CE254FF}</ProjectGuid>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{44D4779C-2366-404E-8743-C937DFD3D366}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TimeTracker</RootNamespace>
     <AssemblyName>TimeTracker</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,8 +26,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,17 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Clock alt.ico</ApplicationIcon>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq">
-      <HintPath>..\Dependencies\Moq.4.0.10827\NET40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Libraries\NUnit-2.6.3\bin\framework\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -63,10 +55,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ListIntervalEntry.xaml.cs">
-      <DependentUpon>ListIntervalEntry.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="StatusViewModel.cs" />
+    <Compile Include="UnitTest\StatusViewModelTest.cs" />
+    <Compile Include="UnitTest\TaskViewModelTest.cs" />
+    <Compile Include="UnitTest\TruncatorTest.cs" />
+    <Compile Include="Tables\Configuration.cs" />
+    <Compile Include="Tables\Task.cs" />
+    <Compile Include="Tables\TimeEntry.cs" />
     <Compile Include="Storage\Constraint.cs" />
     <Compile Include="Storage\IDatabase.cs" />
     <Compile Include="Storage\IStatement.cs" />
@@ -78,32 +72,28 @@
     <Compile Include="Storage\Markup\PrimaryKeyAttribute.cs" />
     <Compile Include="Storage\Markup\TableAttribute.cs" />
     <Compile Include="Storage\Markup\TypeAffinity.cs" />
-    <Compile Include="Storage\SqlException.cs" />
     <Compile Include="Storage\Sqlite\ForeignKeyConstraint.cs" />
+    <Compile Include="Storage\Sqlite\UnitTest\SqliteDatabaseTest.cs" />
+    <Compile Include="Storage\Sqlite\UnitTest\SqliteStatementTest.cs" />
+    <Compile Include="Storage\Sqlite\UnitTest\SqliteTransactionTest.cs" />
     <Compile Include="Storage\Sqlite\Result.cs" />
     <Compile Include="Storage\Sqlite\Sqlite3.cs" />
     <Compile Include="Storage\Sqlite\SqliteDatabase.cs" />
     <Compile Include="Storage\Sqlite\SqliteStatement.cs" />
     <Compile Include="Storage\Sqlite\SqliteTransaction.cs" />
-    <Compile Include="Storage\Sqlite\UnitTest\SqliteDatabaseTest.cs" />
-    <Compile Include="Storage\Sqlite\UnitTest\SqliteStatementTest.cs" />
-    <Compile Include="Storage\Sqlite\UnitTest\SqliteTransactionTest.cs" />
-    <Compile Include="Tables\Configuration.cs" />
-    <Compile Include="Tables\Task.cs" />
-    <Compile Include="Tables\TimeEntry.cs" />
+    <Compile Include="Storage\SqlException.cs" />
+    <Compile Include="StatusViewModel.cs" />
     <Compile Include="TaskViewModel.cs" />
     <Compile Include="TimeEntryViewModel.cs" />
     <Compile Include="TimeService.cs" />
     <Compile Include="Truncator.cs" />
-    <Compile Include="UnitTest\StatusViewModelTest.cs" />
-    <Compile Include="UnitTest\TaskViewModelTest.cs" />
-    <Compile Include="UnitTest\TruncatorTest.cs" />
-    <Compile Include="ListInterval.xaml.cs">
-      <DependentUpon>ListInterval.xaml</DependentUpon>
-    </Compile>
-    <Page Include="ListIntervalEntry.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="ListInterval.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ListIntervalEntry.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -113,14 +103,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ListInterval.xaml.cs">
+      <DependentUpon>ListInterval.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ListIntervalEntry.xaml.cs">
+      <DependentUpon>ListIntervalEntry.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ListInterval.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -147,40 +139,30 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="sqlite3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Clock alt.ico" />
+    <EmbeddedResource Include="Images\Cyan\check_12x10.png" />
+    <EmbeddedResource Include="Images\Cyan\check_16x13.png" />
+    <EmbeddedResource Include="Images\Cyan\check_24x19.png" />
+    <EmbeddedResource Include="Images\Cyan\check_32x26.png" />
+    <EmbeddedResource Include="Images\Cyan\check_8x6.png" />
+    <EmbeddedResource Include="Images\Cyan\x_11x11.png" />
+    <EmbeddedResource Include="Images\Cyan\x_14x14.png" />
+    <EmbeddedResource Include="Images\Cyan\x_21x21.png" />
+    <EmbeddedResource Include="Images\Cyan\x_28x28.png" />
+    <EmbeddedResource Include="Images\Cyan\x_7x7.png" />
+    <EmbeddedResource Include="Images\LightGray\check_12x10.png" />
+    <EmbeddedResource Include="Images\LightGray\check_16x13.png" />
+    <EmbeddedResource Include="Images\LightGray\check_24x19.png" />
+    <EmbeddedResource Include="Images\LightGray\check_32x26.png" />
+    <EmbeddedResource Include="Images\LightGray\check_8x6.png" />
+    <EmbeddedResource Include="Images\LightGray\x_11x11.png" />
+    <EmbeddedResource Include="Images\LightGray\x_14x14.png" />
+    <EmbeddedResource Include="Images\LightGray\x_21x21.png" />
+    <EmbeddedResource Include="Images\LightGray\x_28x28.png" />
+    <EmbeddedResource Include="Images\LightGray\x_7x7.png" />
+    <Content Include="sqlite3.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Cyan\check_12x10.png" />
-    <Resource Include="Images\Cyan\check_16x13.png" />
-    <Resource Include="Images\Cyan\check_24x19.png" />
-    <Resource Include="Images\Cyan\check_32x26.png" />
-    <Resource Include="Images\Cyan\check_8x6.png" />
-    <Resource Include="Images\Cyan\x_11x11.png" />
-    <Resource Include="Images\Cyan\x_14x14.png" />
-    <Resource Include="Images\Cyan\x_21x21.png" />
-    <Resource Include="Images\Cyan\x_28x28.png" />
-    <Resource Include="Images\Cyan\x_7x7.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\LightGray\check_12x10.png" />
-    <Resource Include="Images\LightGray\check_16x13.png" />
-    <Resource Include="Images\LightGray\check_24x19.png" />
-    <Resource Include="Images\LightGray\check_32x26.png" />
-    <Resource Include="Images\LightGray\check_8x6.png" />
-    <Resource Include="Images\LightGray\x_11x11.png" />
-    <Resource Include="Images\LightGray\x_14x14.png" />
-    <Resource Include="Images\LightGray\x_21x21.png" />
-    <Resource Include="Images\LightGray\x_28x28.png" />
-    <Resource Include="Images\LightGray\x_7x7.png" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
