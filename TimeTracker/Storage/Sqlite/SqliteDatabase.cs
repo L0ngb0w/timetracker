@@ -4,41 +4,34 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using TimeTracker.Storage.Markup;
 
-namespace TimeTracker.Storage.Sqlite
-{
-    public enum Location
-    {
+namespace TimeTracker.Storage.Sqlite {
+    public enum Location {
         Memory,
         Temporary,
     }
 
-    public class SqliteDatabase : IDatabase
-    {
-        ISqlite3 mSqlite3;
+    public class SqliteDatabase : IDatabase {
+        readonly ISqlite3 mSqlite3;
+
         IntPtr mDatabase = IntPtr.Zero;
 
-        public long LastInsertRowid
-        {
+        public long LastInsertRowid {
             get { return mSqlite3.LastInsertRowid(mDatabase); }
         }
 
-        SqliteDatabase(ISqlite3 sqlite3)
-        {
+        SqliteDatabase(ISqlite3 sqlite3) {
             if (sqlite3 == null)
                 throw new ArgumentNullException("sqlite3");
 
-            this.mSqlite3 = sqlite3;
+            mSqlite3 = sqlite3;
         }
 
         internal SqliteDatabase(Location location, ISqlite3 sqlite3)
-            : this(sqlite3)
-        {
+            : this(sqlite3) {
             string file;
-            switch (location)
-            {
+            switch (location) {
                 case Location.Memory:
                     file = ":memory:";
                     break;
@@ -50,8 +43,7 @@ namespace TimeTracker.Storage.Sqlite
             }
 
             Result result = mSqlite3.Open16(file, out mDatabase);
-            if (result != Result.Ok)
-            {
+            if (result != Result.Ok) {
                 mSqlite3.Close(mDatabase);
                 throw new Exception("Could not open Sqlite database: " + result.ToString());
             }
@@ -61,11 +53,9 @@ namespace TimeTracker.Storage.Sqlite
         }
 
         internal SqliteDatabase(string filename, ISqlite3 sqlite3)
-            : this(sqlite3)
-        {
+            : this(sqlite3) {
             Result result = mSqlite3.Open16(filename, out mDatabase);
-            if (result != Result.Ok)
-            {
+            if (result != Result.Ok) {
                 var errMsg = mSqlite3.Errmsg16(mDatabase);
 
                 mSqlite3.Close(mDatabase);
@@ -77,27 +67,33 @@ namespace TimeTracker.Storage.Sqlite
         }
 
         public SqliteDatabase(Location location)
-            : this(location, new Sqlite3())
-        {
+            : this(location, new Sqlite3()) {
         }
 
         public SqliteDatabase(string filename)
-            : this(filename, new Sqlite3())
-        {
+            : this(filename, new Sqlite3()) {
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             mSqlite3.Close(mDatabase);
             mDatabase = IntPtr.Zero;
         }
 
-        public void Execute(string sql)
-        {
-            IntPtr errMsg = IntPtr.Zero;
-            Result result = mSqlite3.Exec(mDatabase, sql, out errMsg);
-            if (result != Result.Ok)
-            {
+        //public void Execute(string sql) {
+        //    IntPtr errMsg;
+        //    Result result = mSqlite3.Exec(mDatabase, sql, out errMsg);
+        //    if (result != Result.Ok) {
+        //        var message = Marshal.PtrToStringAnsi(errMsg);
+        //        mSqlite3.Free(errMsg);
+
+        //        throw new SqlException(string.Format("{0} when executing statement: {1}", result, message), sql);
+        //    }
+        //}
+
+        public void Execute(string sql, params object[] args) {
+            IntPtr errMsg;
+            Result result = mSqlite3.Exec(mDatabase, string.Format(sql, args), out errMsg);
+            if (result != Result.Ok) {
                 var message = Marshal.PtrToStringAnsi(errMsg);
                 mSqlite3.Free(errMsg);
 
@@ -105,23 +101,34 @@ namespace TimeTracker.Storage.Sqlite
             }
         }
 
-        public void Execute(string sql, params object[] args)
-        {
-            Execute(string.Format(sql, args));
-        }
+        //public IStatement Prepare(string sql) {
+        //    IntPtr stmt;
+        //    string tail;
+        //    var result = mSqlite3.Prepare16(mDatabase, sql, Encoding.Unicode.GetByteCount(sql), out stmt, out tail);
+        //    if (result != Result.Ok) {
+        //        string message =
+        //            result == Result.Misuse ?
+        //            "Internal misuse of interface" :
+        //            mSqlite3.Errmsg16(mDatabase);
 
-        public IStatement Prepare(string sql)
-        {
+        //        mSqlite3.Finalize(stmt);
+        //        throw new SqlException(string.Format("{0} when preparing statement: {1}", result, message), sql);
+        //    }
+
+        //    return new SqliteStatement(mDatabase, stmt, mSqlite3);
+        //}
+
+        public IStatement Prepare(string sql, params object[] args) {
+            sql = string.Format(sql, args);
+
             IntPtr stmt;
             string tail;
             var result = mSqlite3.Prepare16(mDatabase, sql, Encoding.Unicode.GetByteCount(sql), out stmt, out tail);
-            if (result != Result.Ok)
-            {
-                string message;
-                if (result == Result.Misuse)
-                    message = "Internal misuse of interface";
-                else
-                    message = mSqlite3.Errmsg16(mDatabase);
+            if (result != Result.Ok) {
+                var message =
+                    result == Result.Misuse ?
+                    "Internal misuse of interface" :
+                    mSqlite3.Errmsg16(mDatabase);
 
                 mSqlite3.Finalize(stmt);
                 throw new SqlException(string.Format("{0} when preparing statement: {1}", result, message), sql);
@@ -130,15 +137,8 @@ namespace TimeTracker.Storage.Sqlite
             return new SqliteStatement(mDatabase, stmt, mSqlite3);
         }
 
-        public IStatement Prepare(string sql, params object[] args)
-        {
-            return Prepare(string.Format(sql, args));
-        }
-
-        public Status Status(DatabaseStatusFlag flag, bool reset)
-        {
-            if (flag == DatabaseStatusFlag.MemoryUsed)
-            {
+        public Status Status(DatabaseStatusFlag flag, bool reset) {
+            if (flag == DatabaseStatusFlag.MemoryUsed) {
                 return new Status(mSqlite3.MemoryUsed(), mSqlite3.MemoryHighWater(reset));
             }
 
@@ -146,13 +146,11 @@ namespace TimeTracker.Storage.Sqlite
             int highWater;
 
             var result = mSqlite3.DatabaseStatus(mDatabase, flag, out current, out highWater, false);
-            if (result != Result.Ok)
-            {
-                string message;
-                if (result == Result.Misuse)
-                    message = "Internal misuse of interface";
-                else
-                    message = mSqlite3.Errmsg16(mDatabase);
+            if (result != Result.Ok) {
+                var message =
+                    result == Result.Misuse ?
+                    "Internal misuse of interface" :
+                    mSqlite3.Errmsg16(mDatabase);
 
                 throw new Exception(string.Format("{0} when querying database status: {1}", result, message));
             }
@@ -160,32 +158,30 @@ namespace TimeTracker.Storage.Sqlite
             return new Status(current, highWater);
         }
 
-        public ITransaction BeginTransaction()
-        {
+        public ITransaction BeginTransaction() {
             return new SqliteTransaction(this);
         }
 
-        public ITransaction BeginTransaction(TransactionBehavior behavior)
-        {
+        public ITransaction BeginTransaction(TransactionBehavior behavior) {
             return new SqliteTransaction(this, behavior);
         }
 
-        public void CreateTable<T>(/*ConflictBehavior conflictBehavior*/) where T : class
-        {
+        public void CreateTable<T>(/*ConflictBehavior conflictBehavior*/) where T : class {
             CreateTable(typeof(T)/*, conflictBehavior*/);
         }
 
-        public void CreateTable(Type tableType/*, ConflictBehavior conflictBehavior*/)
-        {
+        public void CreateTable(Type tableType/*, ConflictBehavior conflictBehavior*/) {
             var query = new StringBuilder();
 
-            var table = tableType.GetCustomAttribute<TableAttribute>();
+            //var table = tableType.GetCustomAttribute<TableAttribute>();
+            var table = tableType.GetCustomAttributes(typeof(TableAttribute), true).Cast<TableAttribute>().SingleOrDefault();
             if (table == null)
                 throw new ArgumentException("Class must be annotated with the Table attribute");
 
             var tableName = string.IsNullOrEmpty(table.Name) ? tableType.Name : table.Name;
 
-            var primaryKey = tableType.GetCustomAttribute<PrimaryKeyAttribute>();
+            //var primaryKey = tableType.GetCustomAttribute<PrimaryKeyAttribute>();
+            var primaryKey = tableType.GetCustomAttributes(typeof(PrimaryKeyAttribute), true).Cast<PrimaryKeyAttribute>().SingleOrDefault();
 
             if (primaryKey != null && !primaryKey.Columns.Any())
                 throw new MarkupException("PrimaryKey", "There must be at least one column in a primary key");
@@ -193,7 +189,7 @@ namespace TimeTracker.Storage.Sqlite
             if (primaryKey != null && primaryKey.Columns.Count() > 1 && primaryKey.AutoIncrement)
                 throw new MarkupException("PrimaryKay", "Primary keys with more than one column can not be auto incrementing");
 
-            var constraints = tableType.GetCustomAttributes<ForeignKeyAttribute>().Select(fk => new ForeignKeyConstraint(fk)).ToArray();
+            var constraints = tableType.GetCustomAttributes(typeof(ForeignKeyAttribute), true).Cast<ForeignKeyAttribute>().Select(fk => new ForeignKeyConstraint(fk)).ToArray();
 
             query
                 .AppendFormat("CREATE TABLE {0} {1} (",
@@ -202,9 +198,9 @@ namespace TimeTracker.Storage.Sqlite
                 .Append(CreateTableColumns(tableType, primaryKey, constraints))
                 .Append(");");
 
-            var indices = tableType.GetCustomAttributes<IndexAttribute>();
-            foreach (var index in indices)
-            {
+            //var indices = tableType.GetCustomAttributes<IndexAttribute>();
+            var indices = tableType.GetCustomAttributes(typeof(IndexAttribute), true).Cast<IndexAttribute>();
+            foreach (var index in indices) {
                 var indexName = string.IsNullOrEmpty(index.Name) ? "Index_" + Guid.NewGuid().ToString("N") : index.Name;
 
                 query
@@ -224,26 +220,23 @@ namespace TimeTracker.Storage.Sqlite
             Execute(query.ToString());
         }
 
-        private static string CreateTableColumns(Type tableType, PrimaryKeyAttribute primaryKey, IEnumerable<IConstraint> constraints)
-        {
+        private static string CreateTableColumns(Type tableType, PrimaryKeyAttribute primaryKey, IEnumerable<IConstraint> constraints) {
             bool primaryKeyCreated = false;
 
             //var columns = new List<string>();
             var columns = new Dictionary<string, string>();
             foreach (var member in tableType.
                 GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).
-                Where(m => m.MemberType == MemberTypes.Field || m.MemberType == MemberTypes.Property))
-            {
-                var column = member.GetCustomAttribute<ColumnAttribute>();
-                if (column != null)
-                {
+                Where(m => m.MemberType == MemberTypes.Field || m.MemberType == MemberTypes.Property)) {
+                //var column = member.GetCustomAttribute<ColumnAttribute>();
+                var column = member.GetCustomAttributes(typeof(ColumnAttribute), true).Cast<ColumnAttribute>().SingleOrDefault();
+                if (column != null) {
                     var clause = new StringBuilder();
 
                     var columnName = string.IsNullOrEmpty(column.Name) ? member.Name : column.Name;
                     clause.Append(columnName);
 
-                    switch (column.TypeAffinity)
-                    {
+                    switch (column.TypeAffinity) {
                         case TypeAffinity.None:
                             break;
                         case TypeAffinity.Integer:
@@ -270,8 +263,7 @@ namespace TimeTracker.Storage.Sqlite
                     if (column.Unique)
                         clause.Append(" UNIQUE");
 
-                    if (primaryKey != null && primaryKey.Columns.Count() == 1 && primaryKey.Columns.First() == columnName)
-                    {
+                    if (primaryKey != null && primaryKey.Columns.Count() == 1 && primaryKey.Columns.First() == columnName) {
                         if (!string.IsNullOrEmpty(primaryKey.Name))
                             clause.Append(" CONSTRAINT ").Append(primaryKey.Name);
 
@@ -282,27 +274,24 @@ namespace TimeTracker.Storage.Sqlite
                         primaryKeyCreated = true;
                     }
 
-                    foreach (var constraint in constraints)
-                    {
+                    foreach (var constraint in constraints) {
                         var constraintClause = constraint.GenerateAsColumnConstraint(columnName);
                         if (!string.IsNullOrEmpty(constraintClause))
                             clause.Append(" ").Append(constraintClause);
                     }
 
-                  if (!string.IsNullOrEmpty(column.Default))
-                  {
-                    clause
-                      .Append(" DEFAULT ")
-                      .Append(column.Default);
-                  }
+                    if (!string.IsNullOrEmpty(column.Default)) {
+                        clause
+                          .Append(" DEFAULT ")
+                          .Append(column.Default);
+                    }
 
                     columns.Add(columnName, clause.ToString());
                 }
             }
 
             var constraintClauses = new List<string>();
-            if (primaryKey != null && primaryKey.Columns.Count() > 1)
-            {
+            if (primaryKey != null && primaryKey.Columns.Count() > 1) {
                 var constraint = new StringBuilder();
 
                 if (!string.IsNullOrEmpty(primaryKey.Name))
@@ -318,18 +307,12 @@ namespace TimeTracker.Storage.Sqlite
                 throw new MarkupException("PrimaryKey", "Primary key did not match any columns");
 
             var columnNamesSet = new HashSet<string>(columns.Keys);
-            foreach (var constraint in constraints)
-            {
-                var constraintClause = constraint.GenerateAsTableConstraint(columnNamesSet);
-                if (!string.IsNullOrEmpty(constraintClause))
-                    constraintClauses.Add(constraintClause);
-            }
+            constraintClauses.AddRange(constraints.Select(constraint => constraint.GenerateAsTableConstraint(columnNamesSet)).Where(constraintClause => !string.IsNullOrEmpty(constraintClause)));
 
             return string.Join(",", columns.Values.Concat(constraintClauses));
         }
 
-        private static string CreateIndexColumns(IndexAttribute index)
-        {
+        private static string CreateIndexColumns(IndexAttribute index) {
             return string.Join(",", index.Columns);
         }
     }

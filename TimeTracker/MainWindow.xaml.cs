@@ -23,36 +23,38 @@ namespace TimeTracker {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        Timer timer;
+        Timer mTimer;
 
-        readonly IDatabase database;
-        readonly Tables.Configuration configuration = new Tables.Configuration();
-        readonly BackgroundWorker populate = new BackgroundWorker();
+        readonly IDatabase mDatabase;
+        readonly Tables.Configuration mConfiguration = new Tables.Configuration();
+        readonly BackgroundWorker mPopulate = new BackgroundWorker();
 
-        readonly StatusViewModel status;
+        readonly IStatusViewModel mStatus;
+        readonly IDatabaseViewModel mDatabaseViewModel;
 
-        public ObservableCollection<TaskViewModel> Tasks { get; set; }
+        public ObservableCollection<ITaskViewModel> Tasks { get; set; }
 
         public MainWindow() {
             InitializeComponent();
 
-            Tasks = new ObservableCollection<TaskViewModel>();
+            Tasks = new ObservableCollection<ITaskViewModel>();
             Tasks.CollectionChanged += OnTaskCollectionChanged;
 
-            status = new StatusViewModel(Tasks);
+            mStatus = new StatusViewModel(Tasks);
+            mDatabaseViewModel = new DatabaseViewModel(Tasks);
 
-            ListEntry.DataContext = this;
-            TimeCurrentRounded.DataContext = status;
-            TimeCurrentActual.DataContext = status;
-            TimeTotoalRounded.DataContext = status;
-            TimeTotalActual.DataContext = status;
-            TimeFlexRounded.DataContext = status;
-            TimeFlexActual.DataContext = status;
-            TimeToWorkEnd.DataContext = status;
-            CurrentTime.DataContext = status;
-            CurrentYear.DataContext = status;
-            ButtonPauseEntry.DataContext = status;
-            TextBlockGotoLaterDate.DataContext = status;
+            ListEntry.DataContext = mDatabaseViewModel;
+            TimeCurrentRounded.DataContext = mStatus;
+            TimeCurrentActual.DataContext = mStatus;
+            TimeTotoalRounded.DataContext = mStatus;
+            TimeTotalActual.DataContext = mStatus;
+            TimeFlexRounded.DataContext = mStatus;
+            TimeFlexActual.DataContext = mStatus;
+            TimeToWorkEnd.DataContext = mStatus;
+            CurrentTime.DataContext = mStatus;
+            CurrentYear.DataContext = mStatus;
+            ButtonPauseEntry.DataContext = mStatus;
+            TextBlockGotoLaterDate.DataContext = mStatus;
 
             var applicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var path = System.IO.Path.Combine(applicationData, "TimeTracker");
@@ -61,52 +63,53 @@ namespace TimeTracker {
                 System.IO.Directory.CreateDirectory(path);
 
             var uri = string.Format("{0}/{1}", path.Replace('\\', '/'), "timetracker.db");
-            database = new Storage.Sqlite.SqliteDatabase(uri);
+            mDatabase = new Storage.Sqlite.SqliteDatabase(uri);
 
-            database.CreateTable<Tables.TimeEntry>();
-            database.CreateTable<Tables.Configuration>();
+            mDatabase.CreateTable<Tables.Task>();
+            mDatabase.CreateTable<Tables.TimeEntry>();
+            mDatabase.CreateTable<Tables.Configuration>();
 
-            using (var query = database.Prepare("SELECT WindowWidth, WindowHeight, WindowX, WindowY FROM [Configuration]")) {
+            using (var query = mDatabase.Prepare("SELECT WindowWidth, WindowHeight, WindowX, WindowY FROM [Configuration]")) {
                 if (query.Step() == StepResult.Row) {
-                    configuration.WindowWidth = query.ColumnDouble(0).Value;
-                    configuration.WindowHeight = query.ColumnDouble(1).Value;
-                    configuration.WindowX = query.ColumnDouble(2).Value;
-                    configuration.WindowY = query.ColumnDouble(3).Value;
+                    mConfiguration.WindowWidth = query.ColumnDouble(0).Value;
+                    mConfiguration.WindowHeight = query.ColumnDouble(1).Value;
+                    mConfiguration.WindowX = query.ColumnDouble(2).Value;
+                    mConfiguration.WindowY = query.ColumnDouble(3).Value;
                 } else {
-                    configuration.WindowWidth = this.Width;
-                    configuration.WindowHeight = this.Height;
-                    configuration.WindowX = this.Left;
-                    configuration.WindowY = this.Top;
+                    mConfiguration.WindowWidth = this.Width;
+                    mConfiguration.WindowHeight = this.Height;
+                    mConfiguration.WindowX = this.Left;
+                    mConfiguration.WindowY = this.Top;
                 }
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            this.Width = configuration.WindowWidth;
-            this.Height = configuration.WindowHeight;
-            this.Left = configuration.WindowX;
-            this.Top = configuration.WindowY;
+            this.Width = mConfiguration.WindowWidth;
+            this.Height = mConfiguration.WindowHeight;
+            this.Left = mConfiguration.WindowX;
+            this.Top = mConfiguration.WindowY;
 
-            timer = new Timer(1000);
-            timer.Elapsed += OnTimerElapsed;
-            timer.AutoReset = true;
+            mTimer = new Timer(1000);
+            mTimer.Elapsed += OnTimerElapsed;
+            mTimer.AutoReset = true;
 
             DisableForUpdate();
 
-            populate.DoWork += OnPopulateDoWork;
-            populate.RunWorkerCompleted += OnPopulateRunWorkerCompleted;
-            populate.RunWorkerAsync(database);
+            mPopulate.DoWork += OnPopulateDoWork;
+            mPopulate.RunWorkerCompleted += OnPopulateRunWorkerCompleted;
+            mPopulate.RunWorkerAsync(mDatabase);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e) {
-            timer.Elapsed -= OnTimerElapsed;
+            mTimer.Elapsed -= OnTimerElapsed;
 
-            using (var transaction = database.BeginTransaction()) {
-                using (var statement = database.Prepare("DELETE FROM [Configuration]")) {
+            using (var transaction = mDatabase.BeginTransaction()) {
+                using (var statement = mDatabase.Prepare("DELETE FROM [Configuration]")) {
                     statement.Step();
                 }
 
-                using (var statement = database.Prepare("INSERT INTO [Configuration] (WindowWidth, WindowHeight, WindowX, WindowY) VALUES (@WindowWidth, @WindowHeight, @WindowX, @WindowY)")) {
+                using (var statement = mDatabase.Prepare("INSERT INTO [Configuration] (WindowWidth, WindowHeight, WindowX, WindowY) VALUES (@WindowWidth, @WindowHeight, @WindowX, @WindowY)")) {
                     //<<<<<<< HEAD
                     //            Dispatcher.BeginInvoke(new Action(() =>
                     //            {
@@ -135,9 +138,9 @@ namespace TimeTracker {
         }
 
         private void Window_Closed(object sender, EventArgs e) {
-            timer.Dispose();
-            database.Dispose();
-            populate.Dispose();
+            mTimer.Dispose();
+            mDatabase.Dispose();
+            mPopulate.Dispose();
         }
 
         void OnPopulateRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -152,7 +155,7 @@ namespace TimeTracker {
                 //else
                 //    status.IsRunning = false;
 
-                status.Refresh();
+                mStatus.Refresh();
                 EnableAfterUpdate();
             }));
         }
@@ -169,7 +172,7 @@ namespace TimeTracker {
                 taskQuery = database.Prepare("SELECT TaskId, Date, Text FROM [Task] WHERE Date = @Date ORDER BY Date");
                 timeEntryQuery = database.Prepare("SELECT EntryId, TimeStart, TimeEnd, Text FROM [TimeEntry] WHERE TaskId = @TaskId ORDER BY TimeStart, TimeEnd");
 
-                taskQuery.BindLong("@Date", status.CurrentDate.ToBinary());
+                taskQuery.BindLong("@Date", mStatus.CurrentDate.ToBinary());
 
                 while (taskQuery.Step() == StepResult.Row) {
                     var task = new Tables.Task(taskQuery.ColumnLong(0) ?? -1, taskQuery.ColumnLong(1) ?? -1, taskQuery.ColumnText(2));
@@ -232,7 +235,7 @@ namespace TimeTracker {
             switch (e.PropertyName) {
                 case "Text":
                     var task = (TaskViewModel)sender;
-                    using (var statement = database.Prepare("UPDATE [Task] Set Text = @Text WHERE TaskId = @TaskId")) {
+                    using (var statement = mDatabase.Prepare("UPDATE [Task] Set Text = @Text WHERE TaskId = @TaskId")) {
                         statement.BindLong("@TaskId", task.Task.TaskId);
                         statement.BindText("@Text", task.Task.Text ?? string.Empty);
 
@@ -248,7 +251,7 @@ namespace TimeTracker {
                 case "TimeStart":
                 case "TimeEnd":
                     var entry = (TimeEntryViewModel)sender;
-                    using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text WHERE EntryId = @EntryId")) {
+                    using (var statement = mDatabase.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text WHERE EntryId = @EntryId")) {
                         statement.BindLong("@EntryId", entry.Entry.EntryId);
                         statement.BindLong("@TimeStart", entry.Entry.TimeStart);
                         statement.BindLong("@TimeEnd", entry.Entry.TimeEnd);
@@ -261,15 +264,16 @@ namespace TimeTracker {
         }
 
         void OnTimerElapsed(object sender, ElapsedEventArgs e) {
-            foreach (var task in Tasks.Where(t => t.IsActive)) {
-                task.Refresh();
-            }
+            var active = Tasks.SingleOrDefault(t => t.IsActive);
+            if (active == null)
+                return;
 
-            status.Refresh();
+            active.Refresh();
+            mStatus.Refresh();
         }
 
         private void OnButtonNewClicked(object sender, RoutedEventArgs e) {
-            using (var transaction = database.BeginTransaction()) {
+            using (var transaction = mDatabase.BeginTransaction()) {
                 TerminateCurrent();
                 AddNewTask();
 
@@ -289,32 +293,32 @@ namespace TimeTracker {
         //}
 
         private void AddNewTask() {
-            var date = status.CurrentDate.ToBinary();
-            var text = string.Empty;
+            var date = mStatus.CurrentDate.ToBinary();
+            var text = Guid.NewGuid().ToString(); //string.Empty;
 
-            using (var statement = database.Prepare("INSERT INTO [Task] (Date, Text) VALUES (@Date, @Text)")) {
+            using (var statement = mDatabase.Prepare("INSERT INTO [Task] (Date, Text) VALUES (@Date, @Text)")) {
                 statement.BindLong("@Date", date);
                 statement.BindText("@Text", text);
 
                 statement.Step();
             }
 
-            var task = new Tables.Task(database.LastInsertRowid, date, text);
+            var task = new Tables.Task(mDatabase.LastInsertRowid, date, text);
             var taskViewModel = new TaskViewModel(task);
             Tasks.Add(taskViewModel);
 
-            taskViewModel.AddNewTimeEntry(database);
+            taskViewModel.Start(mDatabase);
         }
 
         private void TerminateCurrent() {
             var active = Tasks.SingleOrDefault(t => t.IsActive);
             if (active != null) {
-                active.TerminateActiveTimeEntry(database);
+                active.Terminate(mDatabase);
             }
         }
 
         private void DisableForUpdate() {
-            timer.Enabled = false;
+            mTimer.Enabled = false;
 
             ButtonNewEntry.IsEnabled = false;
             ButtonPauseEntry.IsEnabled = false;
@@ -325,22 +329,22 @@ namespace TimeTracker {
 
         private void EnableAfterUpdate() {
             TextBlockGotoEarlierDate.IsEnabled = true;
-            TextBlockGotoLaterDate.IsEnabled = status.CanGotoLaterDate;
+            TextBlockGotoLaterDate.IsEnabled = mStatus.CanGotoLaterDate;
             ButtonNewEntry.IsEnabled = true;
             ButtonPauseEntry.IsEnabled = true;
             ListEntry.IsEnabled = true;
 
-            timer.Enabled = true;
+            mTimer.Enabled = true;
         }
 
         private void OnGotoEarlierDate(object sender, RoutedEventArgs e) {
-            if (status.IsRunning)
+            if (mStatus.IsRunning)
                 TerminateCurrent();
 
-            status.CurrentDate = status.CurrentDate.Subtract(TimeSpan.FromDays(1));
+            mStatus.CurrentDate = mStatus.CurrentDate.Subtract(TimeSpan.FromDays(1));
 
             DisableForUpdate();
-            populate.RunWorkerAsync(database);
+            mPopulate.RunWorkerAsync(mDatabase);
         }
 
         private void OnGotoLaterDate(object sender, RoutedEventArgs e) {
@@ -348,13 +352,13 @@ namespace TimeTracker {
         }
 
         private void GotoLaterDate() {
-            if (status.IsRunning)
+            if (mStatus.IsRunning)
                 TerminateCurrent();
 
-            status.CurrentDate = status.CurrentDate.Add(TimeSpan.FromDays(1));
+            mStatus.CurrentDate = mStatus.CurrentDate.Add(TimeSpan.FromDays(1));
 
             DisableForUpdate();
-            populate.RunWorkerAsync(database);
+            mPopulate.RunWorkerAsync(mDatabase);
         }
     }
 }

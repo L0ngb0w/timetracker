@@ -87,11 +87,11 @@ namespace TimeTracker.Storage
     {
         long LastInsertRowid { get; }
 
-        void Execute(string sql);
+        //void Execute(string sql);
 
         void Execute(string sql, params object[] args);
 
-        IStatement Prepare(string sql);
+        //IStatement Prepare(string sql);
 
         IStatement Prepare(string sql, params object[] args);
 

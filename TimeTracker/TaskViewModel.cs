@@ -5,10 +5,26 @@ using System.Linq;
 using TimeTracker.Storage;
 
 namespace TimeTracker {
-    public class TaskViewModel : INotifyPropertyChanged {
+    public interface ITaskViewModel : INotifyPropertyChanged {
+        string Text { get; set; }
+
+        DateTime Date { get; }
+
+        TimeSpan TotalTime { get; }
+
+        bool IsActive { get; }
+
+        void Refresh();
+
+        void Start(IDatabase database);
+
+        void Terminate(IDatabase database);
+    }
+
+    public class TaskViewModel : ITaskViewModel {
         readonly Tables.Task mTask;
 
-        readonly ObservableCollection<TimeEntryViewModel> mTimeEntries;
+        readonly ObservableCollection<ITimeEntryViewModel> mTimeEntries;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -19,7 +35,7 @@ namespace TimeTracker {
                 throw new ArgumentNullException("task");
 
             mTask = task;
-            mTimeEntries = new ObservableCollection<TimeEntryViewModel>();
+            mTimeEntries = new ObservableCollection<ITimeEntryViewModel>();
         }
 
         public DateTime Date {
@@ -34,7 +50,9 @@ namespace TimeTracker {
             }
         }
 
-        public ObservableCollection<TimeEntryViewModel> TimeEntries { get { return mTimeEntries; } }
+        public ObservableCollection<ITimeEntryViewModel> TimeEntries {
+            get { return mTimeEntries; }
+        }
 
         public TimeSpan TotalTime {
             get { return mTimeEntries.Aggregate(new TimeSpan(), (a, t) => a + t.Difference); }
@@ -45,15 +63,16 @@ namespace TimeTracker {
         }
 
         public void Refresh() {
-            NotifyPropertyChanged("TotalTime");
+            var active = mTimeEntries.SingleOrDefault(t => t.IsActive);
+            if (active != null) {
+                active.Refresh();
 
-            foreach (var entry in mTimeEntries) {
-                entry.Refresh();
+                NotifyPropertyChanged("TotalTime");
             }
         }
 
-        public void AddNewTimeEntry(IDatabase database) {
-            TerminateActiveTimeEntry(database);
+        public void Start(IDatabase database) {
+            Terminate(database);
 
             var time = TimeService.Time;
             var startTime = time.ToBinary();
@@ -71,10 +90,19 @@ namespace TimeTracker {
             TimeEntries.Add(new TimeEntryViewModel(entry));
         }
 
-        public void TerminateActiveTimeEntry(IDatabase database) {
+        //public void Store(IDatabase database) {
+        //    using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text")) {
+        //        statement.BindLong("@TimeStart", Time)
+        //    }
+        //}
+
+        public void Terminate(IDatabase database) {
             var active = mTimeEntries.SingleOrDefault(t => t.IsActive);
             if (active != null) {
                 active.Terminate(database);
+
+                NotifyPropertyChanged("IsActive");
+                NotifyPropertyChanged("TotalTime");
             }
         }
 

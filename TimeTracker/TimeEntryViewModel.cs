@@ -1,29 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TimeTracker.Storage;
 
 namespace TimeTracker {
-    public class TimeEntryViewModel : INotifyPropertyChanged {
-        readonly Tables.TimeEntry entry;
+    public interface ITimeEntryViewModel : INotifyPropertyChanged {
+        DateTime StartTime { get; set; }
+
+        DateTime? EndTime { get; set; }
+
+        string Text { get; set; }
+
+        TimeSpan Difference { get; }
+
+        bool IsActive { get; }
+
+        void Refresh();
+
+        void Terminate(IDatabase database);
+    }
+
+    public class TimeEntryViewModel : ITimeEntryViewModel {
+        readonly Tables.TimeEntry mEntry;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Tables.TimeEntry Entry { get { return entry; } }
+        public Tables.TimeEntry Entry { get { return mEntry; } }
 
         public TimeEntryViewModel(Tables.TimeEntry entry) {
-            this.entry = entry;
+            mEntry = entry;
         }
 
         public DateTime StartTime {
             get {
-                return DateTime.FromBinary(entry.TimeStart);
+                return DateTime.FromBinary(mEntry.TimeStart);
             }
             set {
-                entry.TimeStart = value.ToBinary();
+                mEntry.TimeStart = value.ToBinary();
                 if (PropertyChanged != null)
                     PropertyChanged(this, new PropertyChangedEventArgs("StartTime"));
             }
@@ -31,10 +43,10 @@ namespace TimeTracker {
 
         public DateTime? EndTime {
             get {
-                return entry.TimeEnd.HasValue ? DateTime.FromBinary(entry.TimeEnd.Value) : (DateTime?)null;
+                return mEntry.TimeEnd.HasValue ? DateTime.FromBinary(mEntry.TimeEnd.Value) : (DateTime?)null;
             }
             set {
-                entry.TimeEnd = value.HasValue ? value.Value.ToBinary() : (long?)null;
+                mEntry.TimeEnd = value.HasValue ? value.Value.ToBinary() : (long?)null;
                 if (PropertyChanged != null)
                     PropertyChanged(this, new PropertyChangedEventArgs("EndTime"));
             }
@@ -42,20 +54,15 @@ namespace TimeTracker {
 
         public TimeSpan Difference {
             get {
-                DateTime end;
-                if (EndTime.HasValue)
-                    end = EndTime.Value;
-                else
-                    end = TimeService.Time;
-
+                var end = EndTime.HasValue ? EndTime.Value : TimeService.Time;
                 return end - StartTime;
             }
         }
 
         public string Text {
-            get { return entry.Text; }
+            get { return mEntry.Text; }
             set {
-                entry.Text = value;
+                mEntry.Text = value;
                 if (PropertyChanged != null)
                     PropertyChanged(this, new PropertyChangedEventArgs("Text"));
             }

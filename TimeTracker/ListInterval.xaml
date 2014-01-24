@@ -3,33 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:tt="clr-namespace:TimeTracker"
+             xmlns:tt="clr-namespace:TimeTracker" xmlns:design="clr-namespace:TimeTracker.Design"
+             d:DataContext="{d:DesignInstance Type=design:DesignDatabaseViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Grid>
-        <ListView x:Name="ListEntry" Grid.Column="0" Margin="4" ItemsSource="{Binding Path=TimeEntries}" >
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Start" Width="50" DisplayMemberBinding="{Binding Path=StartTime, StringFormat=HH:mm}" />
-                    <GridViewColumn Header="End" Width="50" DisplayMemberBinding="{Binding Path=EndTime, StringFormat=HH:mm}" />
-                    <GridViewColumn Header="Interval" Width="50" DisplayMemberBinding="{Binding Path=Difference, StringFormat=hh\\:mm}" />
-                    <GridViewColumn Header="Description" Width="470" >
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                    <tt:ListIntervalEntry />
-                                </Grid>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-    </Grid>
+    <Border BorderBrush="CornflowerBlue" BorderThickness="1">
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Path=Tasks}" Margin="2">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid x:Name="ItemGrid" HorizontalAlignment="Stretch" Background="Transparent">
+                            <Border x:Name="ItemBorder" BorderThickness="1" Margin="1">
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=IsMouseOver, ElementName=ItemGrid}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" To="CornflowerBlue" Duration="00:00:00.100" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" To="LightGray" Duration="00:00:00.100" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                
+                                <tt:Task HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Border>
 </UserControl>
