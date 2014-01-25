@@ -10,18 +10,21 @@ namespace TimeTracker {
 
         DateTime Date { get; }
 
+        ObservableCollection<ITimeEntryViewModel> TimeEntries { get; }
+
         TimeSpan TotalTime { get; }
 
         bool IsActive { get; }
 
         void Refresh();
 
-        void Start(IDatabase database);
+        void Start();
 
-        void Terminate(IDatabase database);
+        void Terminate();
     }
 
     public class TaskViewModel : ITaskViewModel {
+        readonly IDatabase mDatabase;
         readonly Tables.Task mTask;
 
         readonly ObservableCollection<ITimeEntryViewModel> mTimeEntries;
@@ -30,10 +33,14 @@ namespace TimeTracker {
 
         public Tables.Task Task { get { return mTask; } }
 
-        public TaskViewModel(Tables.Task task) {
+        public TaskViewModel(IDatabase database, Tables.Task task) {
+            if (database == null)
+                throw new ArgumentNullException("database");
+
             if (task == null)
                 throw new ArgumentNullException("task");
 
+            mDatabase = database;
             mTask = task;
             mTimeEntries = new ObservableCollection<ITimeEntryViewModel>();
         }
@@ -71,14 +78,14 @@ namespace TimeTracker {
             }
         }
 
-        public void Start(IDatabase database) {
-            Terminate(database);
+        public void Start() {
+            Terminate();
 
             var time = TimeService.Time;
             var startTime = time.ToBinary();
             var text = string.Empty;
 
-            using (var statement = database.Prepare("INSERT INTO [TimeEntry] (TaskId, TimeStart, Text) VALUES (@TaskId, @TimeStart, @Text)")) {
+            using (var statement = mDatabase.Prepare("INSERT INTO [TimeEntry] (TaskId, TimeStart, Text) VALUES (@TaskId, @TimeStart, @Text)")) {
                 statement.BindLong("@TaskId", Task.TaskId);
                 statement.BindLong("@TimeStart", startTime);
                 statement.BindText("@Text", text);
@@ -86,8 +93,11 @@ namespace TimeTracker {
                 statement.Step();
             }
 
-            var entry = new Tables.TimeEntry(database.LastInsertRowid, Task.TaskId, startTime, null, text);
+            var entry = new Tables.TimeEntry(mDatabase.LastInsertRowid, Task.TaskId, startTime, null, text);
             TimeEntries.Add(new TimeEntryViewModel(entry));
+
+            NotifyPropertyChanged("IsActive");
+            NotifyPropertyChanged("TotalTime");
         }
 
         //public void Store(IDatabase database) {
@@ -96,10 +106,10 @@ namespace TimeTracker {
         //    }
         //}
 
-        public void Terminate(IDatabase database) {
+        public void Terminate() {
             var active = mTimeEntries.SingleOrDefault(t => t.IsActive);
             if (active != null) {
-                active.Terminate(database);
+                active.Terminate(mDatabase);
 
                 NotifyPropertyChanged("IsActive");
                 NotifyPropertyChanged("TotalTime");

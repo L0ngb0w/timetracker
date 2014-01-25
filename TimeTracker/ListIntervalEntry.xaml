@@ -4,18 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:tt="clr-namespace:TimeTracker"
+             xmlns:design="clr-namespace:TimeTracker.Design"
+             d:DataContext="{d:DesignInstance Type=design:DesignTimeEntryViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="100" d:DesignWidth="300"
              MouseUp="ListIntervalEntry_OnMouseUp"
              >
 
     <UserControl.Resources>
-        <BitmapImage x:Key="ImageNeutralOk" UriSource="pack://application:,,,/Images/LightGray/check_16x13.png" />
+        <!--<BitmapImage x:Key="ImageNeutralOk" UriSource="pack://application:,,,/Images/LightGray/check_16x13.png" />
         <BitmapImage x:Key="ImageLightedOk" UriSource="pack://application:,,,/Images/Cyan/check_16x13.png" />
         <BitmapImage x:Key="ImageNeutralCancel" UriSource="pack://application:,,,/Images/LightGray/x_14x14.png" />
-        <BitmapImage x:Key="ImageLightedCancel" UriSource="pack://application:,,,/Images/Cyan/x_14x14.png" />
+        <BitmapImage x:Key="ImageLightedCancel" UriSource="pack://application:,,,/Images/Cyan/x_14x14.png" />-->
 
-        <Style x:Key="FlatButtonOkStyle" TargetType="{x:Type Button}">
+        <!--<Style x:Key="FlatButtonOkStyle" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="WhiteSmoke" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
 
@@ -59,30 +61,33 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>
+        </Style>-->
     </UserControl.Resources>
 
-    <Grid>
-        <DockPanel HorizontalAlignment="Stretch">
-            <DockPanel.Style>
-                <Style>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="True" >
-                            <Setter Property="TextBox.Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="False" >
-                            <Setter Property="TextBox.Visibility" Value="Hidden" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </DockPanel.Style>
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="2,0,0,0">
+    <StackPanel Orientation="Horizontal">
+        <TextBlock Text="{Binding StartTime, StringFormat=HH\\:mm}" Width="30" Margin="2" />
+        <TextBlock Text="{Binding EndTime, StringFormat=HH\\:mm}" Width="30" Margin="2" />
+        <Grid Margin="2">
+            <DockPanel HorizontalAlignment="Stretch">
+                <DockPanel.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="True" >
+                                <Setter Property="TextBox.Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:ListIntervalEntry}}, Path=IsInEditMode}" Value="False" >
+                                <Setter Property="TextBox.Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DockPanel.Style>
+                <!--<StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="2,0,0,0">
                 <Button x:Name="ButtonDescriptionCommit" Width="20" Height="20" Style="{StaticResource FlatButtonOkStyle}" Margin="0,0,1,0" Click="OnDescriptionCommit" />
                 <Button Width="20" Height="20" Style="{StaticResource FlatButtonCancelStyle}" Margin="0,0,1,0" Click="OnDescriptionCancel" />
-            </StackPanel>
-            <TextBox x:Name="TextBoxDescription" Text="{Binding Path=Text, Mode=TwoWay, UpdateSourceTrigger=Explicit}" HorizontalAlignment="Stretch" IsVisibleChanged="TextBox_IsVisibleChanged" />
-        </DockPanel>
-        <TextBlock Text="{Binding Path=Text}" VerticalAlignment="Center" >
+            </StackPanel>-->
+                <TextBox x:Name="TextBoxDescription" Text="{Binding Path=Text, Mode=TwoWay, UpdateSourceTrigger=Explicit}" HorizontalAlignment="Stretch" IsVisibleChanged="TextBox_IsVisibleChanged" />
+            </DockPanel>
+            <TextBlock Text="{Binding Path=Text}" VerticalAlignment="Center" >
             <TextBlock.Style>
                 <Style>
                     <Style.Triggers>
@@ -95,6 +100,7 @@
                     </Style.Triggers>
                 </Style>
             </TextBlock.Style>
-        </TextBlock>
-    </Grid>
+            </TextBlock>
+        </Grid>
+    </StackPanel>
 </UserControl>

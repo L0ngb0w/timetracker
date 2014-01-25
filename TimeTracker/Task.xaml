@@ -9,13 +9,89 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="300">
 
-    <StackPanel Orientation="Horizontal">
-        <ui:ActivateControl Grid.Column="1" IsActive="{Binding IsActive}" Width="12" Height="12" Margin="1,0,1,0" />
-        <Border BorderBrush="CornflowerBlue" BorderThickness="0.5" Margin="4,0,12,0" Padding="2,0,2,0">
-            <TextBlock Text="{Binding TotalTime, StringFormat=hh\\:mm}" VerticalAlignment="Center" FontWeight="Bold"/>
-        </Border>
-        <Grid>
-            <TextBlock x:Name="TextBlockText" Text="{Binding Text}" VerticalAlignment="Center" Grid.Column="6">
+    <UserControl.Resources>
+        <Path x:Key="PathExpanded" Data="M 0,10 L 5,10 L 5,5 Z">
+            <Path.Style>
+                <Style TargetType="{x:Type Path}">
+                    <Setter Property="Stroke" Value="Black" />
+                    <Setter Property="Fill" Value="Black" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True" >
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetProperty="Stroke.Color" To="CornflowerBlue" Duration="00:00:00.100" />
+                                        <ColorAnimation Storyboard.TargetProperty="Fill.Color" To="CornflowerBlue" Duration="00:00:00.100" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetProperty="Stroke.Color" To="Black" Duration="00:00:00.100" />
+                                        <ColorAnimation Storyboard.TargetProperty="Fill.Color" To="Black" Duration="00:00:00.100" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+        </Path>
+        <Path x:Key="PathContracted" Data="M 0,0 L 0,10 L 5,5 Z" >
+            <Path.Style>
+                <Style TargetType="{x:Type Path}">
+                    <Setter Property="Stroke" Value="Gray" />
+                    <Setter Property="Fill" Value="Transparent" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True" >
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetProperty="Stroke.Color" To="CornflowerBlue" Duration="00:00:00.100" />
+                                        <ColorAnimation Storyboard.TargetProperty="Fill.Color" To="CornflowerBlue" Duration="00:00:00.100" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetProperty="Stroke.Color" To="Gray" Duration="00:00:00.100" />
+                                        <ColorAnimation Storyboard.TargetProperty="Fill.Color" To="Transparent" Duration="00:00:00.100" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+        </Path>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal">
+            <ui:ActivateControl x:Name="IsActiveControl" Grid.Column="1" IsActive="{Binding IsActive}" Width="12" Height="12" Margin="1,0,1,0" MouseUp="ActivateControl_MouseUp" />
+            <Grid Width="12" Height="12" Margin="1,0,1,0">
+                <ContentControl VerticalAlignment="Center" HorizontalAlignment="Center" Background="Transparent" MouseUp="ContentControl_MouseUp">
+                    <ContentControl.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType=tt:Task}}" Value="True">
+                                    <Setter Property="ContentControl.Content" Value="{StaticResource ResourceKey=PathExpanded}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType=tt:Task}}" Value="False">
+                                    <Setter Property="ContentControl.Content" Value="{StaticResource ResourceKey=PathContracted}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
+            </Grid>
+            <Border BorderBrush="CornflowerBlue" BorderThickness="0.5" Margin="4,0,12,0" Padding="2,0,2,0">
+                <TextBlock Text="{Binding TotalTime, StringFormat=hh\\:mm}" VerticalAlignment="Center" FontWeight="Bold"/>
+            </Border>
+            <Grid>
+                <TextBlock x:Name="TextBlockText" Text="{Binding Text}" VerticalAlignment="Center" Grid.Column="6">
                 <TextBlock.Style>
                     <Style>
                         <Style.Triggers>
@@ -28,21 +104,47 @@
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
-            </TextBlock>
-            <TextBox x:Name="TextBoxText" Text="{Binding Text, Mode=TwoWay}" VerticalAlignment="Center" Grid.Column="6">
-                <TextBox.Style>
-                    <Style>
+                </TextBlock>
+                <TextBox x:Name="TextBoxText" Text="{Binding Text, Mode=TwoWay}" VerticalAlignment="Center" Grid.Column="6">
+                    <TextBox.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:Task}}, Path=IsInEditMode}" Value="True" >
+                                    <Setter Property="TextBox.Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:Task}}, Path=IsInEditMode}" Value="False" >
+                                    <Setter Property="TextBox.Visibility" Value="Hidden" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="32" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ItemsControl x:Name="Intervals" ItemsSource="{Binding TimeEntries}" Grid.Column="1">
+                <ItemsControl.Style>
+                    <Style TargetType="{x:Type ItemsControl}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:Task}}, Path=IsInEditMode}" Value="True" >
-                                <Setter Property="TextBox.Visibility" Value="Visible" />
+                            <DataTrigger Binding="{Binding Path=IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:Task}}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:Task}}, Path=IsInEditMode}" Value="False" >
-                                <Setter Property="TextBox.Visibility" Value="Hidden" />
+                            <DataTrigger Binding="{Binding Path=IsExpanded, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tt:Task}}}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </TextBox.Style>
-            </TextBox>
+                </ItemsControl.Style>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <tt:ListIntervalEntry />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
     </StackPanel>
 </UserControl>

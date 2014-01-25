@@ -179,7 +179,7 @@ namespace TimeTracker {
                     var entries = QueryTimeEntries(timeEntryQuery, task);
 
                     Dispatcher.BeginInvoke(new Action(() => {
-                        var tvm = new TaskViewModel(task);
+                        var tvm = new TaskViewModel(mDatabase, task);
                         Tasks.Add(tvm);
 
                         foreach (var entry in entries) {
@@ -304,16 +304,16 @@ namespace TimeTracker {
             }
 
             var task = new Tables.Task(mDatabase.LastInsertRowid, date, text);
-            var taskViewModel = new TaskViewModel(task);
+            var taskViewModel = new TaskViewModel(mDatabase, task);
             Tasks.Add(taskViewModel);
 
-            taskViewModel.Start(mDatabase);
+            taskViewModel.Start();
         }
 
         private void TerminateCurrent() {
             var active = Tasks.SingleOrDefault(t => t.IsActive);
             if (active != null) {
-                active.Terminate(mDatabase);
+                active.Terminate();
             }
         }
 

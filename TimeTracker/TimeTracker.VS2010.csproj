@@ -66,6 +66,7 @@
     </ApplicationDefinition>
     <Compile Include="Design\DesignDatabaseViewModel.cs" />
     <Compile Include="Design\DesignTaskViewModel.cs" />
+    <Compile Include="Design\DesignTimeEntryViewModel.cs" />
     <Compile Include="Task.xaml.cs">
       <DependentUpon>Task.xaml</DependentUpon>
     </Compile>

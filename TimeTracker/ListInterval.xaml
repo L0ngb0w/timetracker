@@ -17,7 +17,7 @@
                             <Border x:Name="ItemBorder" BorderThickness="1" Margin="1">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
-                                        <Setter Property="BorderBrush" Value="LightGray"/>
+                                        <Setter Property="BorderBrush" Value="Transparent"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Path=IsMouseOver, ElementName=ItemGrid}" Value="True">
                                                 <DataTrigger.EnterActions>
@@ -30,7 +30,7 @@
                                                 <DataTrigger.ExitActions>
                                                     <BeginStoryboard>
                                                         <Storyboard>
-                                                            <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" To="LightGray" Duration="00:00:00.100" />
+                                                            <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" To="Transparent" Duration="00:00:00.100" />
                                                         </Storyboard>
                                                     </BeginStoryboard>
                                                 </DataTrigger.ExitActions>
