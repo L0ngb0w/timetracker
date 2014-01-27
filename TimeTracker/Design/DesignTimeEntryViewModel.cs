@@ -5,9 +5,11 @@ using System.Text;
 
 namespace TimeTracker.Design {
     class DesignTimeEntryViewModel : ITimeEntryViewModel {
+        public long EntryId { get { return 456; } }
+
         public DateTime StartTime { get; set; }
 
-        public DateTime? EndTime {get; set; }
+        public DateTime? EndTime { get; set; }
 
         public string Text { get; set; }
 
@@ -22,7 +24,7 @@ namespace TimeTracker.Design {
         public void Refresh() {
         }
 
-        public void Terminate(Storage.IDatabase database) {
+        public void Terminate() {
         }
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;

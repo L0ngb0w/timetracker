@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
-using TimeTracker.Storage;
 
 namespace TimeTracker {
     public interface ITimeEntryViewModel : INotifyPropertyChanged {
+        long EntryId { get; }
+
         DateTime StartTime { get; set; }
 
         DateTime? EndTime { get; set; }
@@ -16,19 +17,53 @@ namespace TimeTracker {
 
         void Refresh();
 
-        void Terminate(IDatabase database);
+        void Terminate();
     }
 
     public class TimeEntryViewModel : ITimeEntryViewModel {
+        readonly IDatabaseViewModel mDatabase;
         readonly Tables.TimeEntry mEntry;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Tables.TimeEntry Entry { get { return mEntry; } }
 
-        public TimeEntryViewModel(Tables.TimeEntry entry) {
+        public TimeEntryViewModel(IDatabaseViewModel database, Tables.TimeEntry entry) {
+            if (database == null)
+                throw new ArgumentNullException("database");
+
+            if (entry == null)
+                throw new ArgumentNullException("entry");
+
+            mDatabase = database;
             mEntry = entry;
         }
+
+        public TimeEntryViewModel(IDatabaseViewModel database, ITaskViewModel task) {
+            if (database == null)
+                throw new ArgumentNullException("database");
+
+            if (task == null)
+                throw new ArgumentNullException("task");
+
+            mDatabase = database;
+
+            var time = TimeService.Time;
+            var startTime = time.ToBinary();
+            var text = string.Empty;
+
+            using (var statement = mDatabase.Database.Prepare("INSERT INTO [TimeEntry] (TaskId, TimeStart, Text) VALUES (@TaskId, @TimeStart, @Text)")) {
+                statement.BindLong("@TaskId", task.TaskId);
+                statement.BindLong("@TimeStart", startTime);
+                statement.BindText("@Text", text);
+
+                statement.Step();
+            }
+
+            mEntry = new Tables.TimeEntry(mDatabase.Database.LastInsertRowid, task.TaskId, startTime, null, text);
+        }
+
+        public long EntryId { get { return mEntry.EntryId; } }
 
         public DateTime StartTime {
             get {
@@ -36,8 +71,17 @@ namespace TimeTracker {
             }
             set {
                 mEntry.TimeStart = value.ToBinary();
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("StartTime"));
+
+                using (var statement = mDatabase.Database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart WHERE EntryId = @EntryId AND TaskId = @TaskId")) {
+                    statement.BindLong("@EntryId", mEntry.EntryId);
+                    statement.BindLong("@TaskId", mEntry.TaskId);
+                    statement.BindLong("@TimeStart", mEntry.TimeStart);
+
+                    statement.Step();
+                }
+
+                NotifyPropertyChanged("StartTime");
+                NotifyPropertyChanged("Difference");
             }
         }
 
@@ -47,8 +91,18 @@ namespace TimeTracker {
             }
             set {
                 mEntry.TimeEnd = value.HasValue ? value.Value.ToBinary() : (long?)null;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("EndTime"));
+
+                using (var statement = mDatabase.Database.Prepare("UPDATE [TimeEntry] SET TimeEnd = @TimeEnd WHERE EntryId = @EntryId AND TaskId = @TaskId")) {
+                    statement.BindLong("@EntryId", mEntry.EntryId);
+                    statement.BindLong("@TaskId", mEntry.TaskId);
+                    statement.BindLong("@TimeEnd", mEntry.TimeEnd);
+
+                    statement.Step();
+                }
+
+                NotifyPropertyChanged("EndTime");
+                NotifyPropertyChanged("Difference");
+                NotifyPropertyChanged("IsActive");
             }
         }
 
@@ -63,8 +117,16 @@ namespace TimeTracker {
             get { return mEntry.Text; }
             set {
                 mEntry.Text = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("Text"));
+
+                using (var statement = mDatabase.Database.Prepare("UPDATE [TimeEntry] SET Text = @Text WHERE EntryId = @EntryId AND TaskId = @TaskId")) {
+                    statement.BindLong("@EntryId", mEntry.EntryId);
+                    statement.BindLong("@TaskId", mEntry.TaskId);
+                    statement.BindText("@Text", mEntry.Text);
+
+                    statement.Step();
+                }
+
+                NotifyPropertyChanged("Text");
             }
         }
 
@@ -73,20 +135,16 @@ namespace TimeTracker {
         }
 
         public void Refresh() {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs("Difference"));
+            NotifyPropertyChanged("Difference");
         }
 
-        public void Terminate(IDatabase database) {
+        public void Terminate() {
             EndTime = TimeService.Time;
+        }
 
-            using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeEnd = @TimeEnd WHERE EntryId = @EntryId AND TaskId = @TaskId")) {
-                statement.BindLong("@EntryId", Entry.EntryId);
-                statement.BindLong("@TaskId", Entry.TaskId);
-                statement.BindLong("@TimeEnd", Entry.TimeEnd);
-
-                statement.Step();
-            }
+        void NotifyPropertyChanged(string propertyName) {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

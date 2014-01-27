@@ -168,26 +168,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Clock alt.ico" />
-    <EmbeddedResource Include="Images\Cyan\check_12x10.png" />
-    <EmbeddedResource Include="Images\Cyan\check_16x13.png" />
-    <EmbeddedResource Include="Images\Cyan\check_24x19.png" />
-    <EmbeddedResource Include="Images\Cyan\check_32x26.png" />
-    <EmbeddedResource Include="Images\Cyan\check_8x6.png" />
-    <EmbeddedResource Include="Images\Cyan\x_11x11.png" />
-    <EmbeddedResource Include="Images\Cyan\x_14x14.png" />
-    <EmbeddedResource Include="Images\Cyan\x_21x21.png" />
-    <EmbeddedResource Include="Images\Cyan\x_28x28.png" />
-    <EmbeddedResource Include="Images\Cyan\x_7x7.png" />
-    <EmbeddedResource Include="Images\LightGray\check_12x10.png" />
-    <EmbeddedResource Include="Images\LightGray\check_16x13.png" />
-    <EmbeddedResource Include="Images\LightGray\check_24x19.png" />
-    <EmbeddedResource Include="Images\LightGray\check_32x26.png" />
-    <EmbeddedResource Include="Images\LightGray\check_8x6.png" />
-    <EmbeddedResource Include="Images\LightGray\x_11x11.png" />
-    <EmbeddedResource Include="Images\LightGray\x_14x14.png" />
-    <EmbeddedResource Include="Images\LightGray\x_21x21.png" />
-    <EmbeddedResource Include="Images\LightGray\x_28x28.png" />
-    <EmbeddedResource Include="Images\LightGray\x_7x7.png" />
     <Content Include="sqlite3.dll" />
   </ItemGroup>
   <ItemGroup />

@@ -6,11 +6,11 @@
              xmlns:tt="clr-namespace:TimeTracker" xmlns:design="clr-namespace:TimeTracker.Design"
              d:DataContext="{d:DesignInstance Type=design:DesignDatabaseViewModel, IsDesignTimeCreatable=True}"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="200" d:DesignWidth="500">
 
     <Border BorderBrush="CornflowerBlue" BorderThickness="1">
         <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding Path=Tasks}" Margin="2">
+            <ItemsControl ItemsSource="{Binding Tasks}" Margin="2">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Grid x:Name="ItemGrid" HorizontalAlignment="Stretch" Background="Transparent">

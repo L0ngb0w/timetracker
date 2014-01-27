@@ -4,13 +4,19 @@ using System.ComponentModel;
 
 namespace TimeTracker.Design {
     class DesignTaskViewModel : ITaskViewModel {
-        ObservableCollection<ITimeEntryViewModel> mEntries;
+        readonly ObservableCollection<ITimeEntryViewModel> mEntries;
 
         public string Text { get; set; }
 
-        public DateTime Date {
-            get { return DateTime.Today; }
+        //public DateTime Date {
+        //    get { return DateTime.Today; }
+        //}
+
+        public IDatabaseViewModel Database {
+            get { return null; }
         }
+
+        public long TaskId { get { return 123; } }
 
         public ObservableCollection<ITimeEntryViewModel> TimeEntries {
             get { return mEntries; }

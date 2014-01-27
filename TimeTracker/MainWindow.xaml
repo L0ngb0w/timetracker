@@ -40,7 +40,6 @@
             </Grid.RowDefinitions>
             <Button Name="ButtonNewEntry" Width="30" Height="30" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.RowSpan="2" Click="OnButtonNewClicked" Content="{StaticResource PathPlus}" />
             <Button Name="ButtonPauseEntry" Width="30" Height="30" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.RowSpan="2"  >
-                <!--Click="OnButtonPauseClicked"-->
                 <Button.Style>
                     <Style>
                         <Style.Triggers>

@@ -34,12 +34,11 @@ namespace TimeTracker {
 
         private void ActivateControl_MouseUp(object sender, MouseButtonEventArgs e) {
             var task = ((ITaskViewModel)DataContext);
+            var isActive = task.IsActive;
 
-            if (task.IsActive) {
-                task.Terminate();
-            } else {
+            task.Database.Terminate();
+            if (!isActive)
                 task.Start();
-            }
         }
     }
 }

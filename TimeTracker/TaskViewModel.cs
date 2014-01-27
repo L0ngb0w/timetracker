@@ -2,13 +2,14 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using TimeTracker.Storage;
 
 namespace TimeTracker {
     public interface ITaskViewModel : INotifyPropertyChanged {
+        long TaskId { get; }
+
         string Text { get; set; }
 
-        DateTime Date { get; }
+        IDatabaseViewModel Database { get; }
 
         ObservableCollection<ITimeEntryViewModel> TimeEntries { get; }
 
@@ -24,16 +25,14 @@ namespace TimeTracker {
     }
 
     public class TaskViewModel : ITaskViewModel {
-        readonly IDatabase mDatabase;
+        readonly IDatabaseViewModel mDatabase;
         readonly Tables.Task mTask;
 
         readonly ObservableCollection<ITimeEntryViewModel> mTimeEntries;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Tables.Task Task { get { return mTask; } }
-
-        public TaskViewModel(IDatabase database, Tables.Task task) {
+        public TaskViewModel(IDatabaseViewModel database, Tables.Task task) {
             if (database == null)
                 throw new ArgumentNullException("database");
 
@@ -45,17 +44,46 @@ namespace TimeTracker {
             mTimeEntries = new ObservableCollection<ITimeEntryViewModel>();
         }
 
-        public DateTime Date {
-            get { return DateTime.FromBinary(mTask.Date); }
+        public TaskViewModel(IDatabaseViewModel database, DateTime date)
+            : this(database, date, Guid.NewGuid().ToString()) {
         }
+
+        public TaskViewModel(IDatabaseViewModel database, DateTime date, string text) {
+            if (database == null)
+                throw new ArgumentNullException("database");
+
+            mDatabase = database;
+            mTimeEntries = new ObservableCollection<ITimeEntryViewModel>();
+
+            using (var statement = mDatabase.Database.Prepare("INSERT INTO [Task] (Date, Text) VALUES (@Date, @Text)")) {
+                statement.BindLong("@Date", date.ToBinary());
+                statement.BindText("@Text", text);
+
+                statement.Step();
+            }
+
+            mTask = new Tables.Task(mDatabase.Database.LastInsertRowid, date.ToBinary(), text);
+        }
+
+        public long TaskId { get { return mTask.TaskId; } }
 
         public string Text {
             get { return mTask.Text; }
             set {
                 mTask.Text = value;
+
+                using (var statement = mDatabase.Database.Prepare("UPDATE [Task] Set Text = @Text WHERE TaskId = @TaskId")) {
+                    statement.BindLong("@TaskId", mTask.TaskId);
+                    statement.BindText("@Text", mTask.Text ?? string.Empty);
+
+                    statement.Step();
+                }
+
                 NotifyPropertyChanged("Text");
             }
         }
+
+        public IDatabaseViewModel Database { get { return mDatabase; } }
 
         public ObservableCollection<ITimeEntryViewModel> TimeEntries {
             get { return mTimeEntries; }
@@ -79,41 +107,17 @@ namespace TimeTracker {
         }
 
         public void Start() {
-            Terminate();
-
-            var time = TimeService.Time;
-            var startTime = time.ToBinary();
-            var text = string.Empty;
-
-            using (var statement = mDatabase.Prepare("INSERT INTO [TimeEntry] (TaskId, TimeStart, Text) VALUES (@TaskId, @TimeStart, @Text)")) {
-                statement.BindLong("@TaskId", Task.TaskId);
-                statement.BindLong("@TimeStart", startTime);
-                statement.BindText("@Text", text);
-
-                statement.Step();
-            }
-
-            var entry = new Tables.TimeEntry(mDatabase.LastInsertRowid, Task.TaskId, startTime, null, text);
-            TimeEntries.Add(new TimeEntryViewModel(entry));
+            TimeEntries.Add(new TimeEntryViewModel(mDatabase, this));
 
             NotifyPropertyChanged("IsActive");
             NotifyPropertyChanged("TotalTime");
         }
 
-        //public void Store(IDatabase database) {
-        //    using (var statement = database.Prepare("UPDATE [TimeEntry] SET TimeStart = @TimeStart, TimeEnd = @TimeEnd, Text = @Text")) {
-        //        statement.BindLong("@TimeStart", Time)
-        //    }
-        //}
-
         public void Terminate() {
-            var active = mTimeEntries.SingleOrDefault(t => t.IsActive);
-            if (active != null) {
-                active.Terminate(mDatabase);
+            mTimeEntries.Single(t => t.IsActive).Terminate();
 
-                NotifyPropertyChanged("IsActive");
-                NotifyPropertyChanged("TotalTime");
-            }
+            NotifyPropertyChanged("IsActive");
+            NotifyPropertyChanged("TotalTime");
         }
 
         void NotifyPropertyChanged(string propertyName) {

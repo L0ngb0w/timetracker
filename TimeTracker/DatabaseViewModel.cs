@@ -1,24 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using TimeTracker.Storage;
 
 namespace TimeTracker {
-    interface IDatabaseViewModel : INotifyPropertyChanged {
+    public interface IDatabaseViewModel : INotifyPropertyChanged {
+        IDatabase Database { get; }
+
         ObservableCollection<ITaskViewModel> Tasks { get; }
+
+        void Start(DateTime date);
+
+        void Terminate();
     }
 
-    class DatabaseViewModel : IDatabaseViewModel {
+    public class DatabaseViewModel : IDatabaseViewModel {
+        readonly IDatabase mDatabase;
         readonly ObservableCollection<ITaskViewModel> mTasks;
+
+        public IDatabase Database { get { return mDatabase; } }
 
         public ObservableCollection<ITaskViewModel> Tasks { get { return mTasks; } }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public DatabaseViewModel(ObservableCollection<ITaskViewModel> tasks) {
+        public DatabaseViewModel(IDatabase database, ObservableCollection<ITaskViewModel> tasks) {
+            if (database == null)
+                throw new ArgumentNullException("database");
+
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
+
+            mDatabase = database;
             mTasks = tasks;
+        }
+
+        public void Start(DateTime date) {
+            var taskViewModel = new TaskViewModel(this, date);
+            Tasks.Add(taskViewModel);
+
+            taskViewModel.Start();
+        }
+
+        public void Terminate() {
+            var active = Tasks.SingleOrDefault(t => t.IsActive);
+            if (active != null)
+                active.Terminate();
         }
     }
 }
