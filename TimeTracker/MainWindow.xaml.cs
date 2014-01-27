@@ -151,7 +151,7 @@ namespace TimeTracker {
                         Tasks.Add(tvm);
 
                         foreach (var entry in entries) {
-                            tvm.TimeEntries.Add(new TimeEntryViewModel(mDatabaseViewModel, entry));
+                            tvm.Intervals.Add(new IntervalViewModel(mDatabaseViewModel, entry));
                         }
                     }));
                 }

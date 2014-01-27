@@ -11,7 +11,7 @@ namespace TimeTracker {
 
         IDatabaseViewModel Database { get; }
 
-        ObservableCollection<ITimeEntryViewModel> TimeEntries { get; }
+        ObservableCollection<IIntervalViewModel> Intervals { get; }
 
         TimeSpan TotalTime { get; }
 
@@ -28,7 +28,7 @@ namespace TimeTracker {
         readonly IDatabaseViewModel mDatabase;
         readonly Tables.Task mTask;
 
-        readonly ObservableCollection<ITimeEntryViewModel> mTimeEntries;
+        readonly ObservableCollection<IIntervalViewModel> mIntervals;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -41,7 +41,7 @@ namespace TimeTracker {
 
             mDatabase = database;
             mTask = task;
-            mTimeEntries = new ObservableCollection<ITimeEntryViewModel>();
+            mIntervals = new ObservableCollection<IIntervalViewModel>();
         }
 
         public TaskViewModel(IDatabaseViewModel database, DateTime date)
@@ -53,7 +53,7 @@ namespace TimeTracker {
                 throw new ArgumentNullException("database");
 
             mDatabase = database;
-            mTimeEntries = new ObservableCollection<ITimeEntryViewModel>();
+            mIntervals = new ObservableCollection<IIntervalViewModel>();
 
             using (var statement = mDatabase.Database.Prepare("INSERT INTO [Task] (Date, Text) VALUES (@Date, @Text)")) {
                 statement.BindLong("@Date", date.ToBinary());
@@ -85,20 +85,20 @@ namespace TimeTracker {
 
         public IDatabaseViewModel Database { get { return mDatabase; } }
 
-        public ObservableCollection<ITimeEntryViewModel> TimeEntries {
-            get { return mTimeEntries; }
+        public ObservableCollection<IIntervalViewModel> Intervals {
+            get { return mIntervals; }
         }
 
         public TimeSpan TotalTime {
-            get { return mTimeEntries.Aggregate(new TimeSpan(), (a, t) => a + t.Difference); }
+            get { return mIntervals.Aggregate(new TimeSpan(), (a, t) => a + t.Difference); }
         }
 
         public bool IsActive {
-            get { return mTimeEntries.Any(e => e.IsActive); }
+            get { return mIntervals.Any(e => e.IsActive); }
         }
 
         public void Refresh() {
-            var active = mTimeEntries.SingleOrDefault(t => t.IsActive);
+            var active = mIntervals.SingleOrDefault(t => t.IsActive);
             if (active != null) {
                 active.Refresh();
 
@@ -107,14 +107,14 @@ namespace TimeTracker {
         }
 
         public void Start() {
-            TimeEntries.Add(new TimeEntryViewModel(mDatabase, this));
+            Intervals.Add(new IntervalViewModel(mDatabase, this));
 
             NotifyPropertyChanged("IsActive");
             NotifyPropertyChanged("TotalTime");
         }
 
         public void Terminate() {
-            mTimeEntries.Single(t => t.IsActive).Terminate();
+            mIntervals.Single(t => t.IsActive).Terminate();
 
             NotifyPropertyChanged("IsActive");
             NotifyPropertyChanged("TotalTime");

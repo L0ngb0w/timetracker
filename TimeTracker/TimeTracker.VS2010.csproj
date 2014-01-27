@@ -66,7 +66,7 @@
     </ApplicationDefinition>
     <Compile Include="Design\DesignDatabaseViewModel.cs" />
     <Compile Include="Design\DesignTaskViewModel.cs" />
-    <Compile Include="Design\DesignTimeEntryViewModel.cs" />
+    <Compile Include="Design\DesignIntervalViewModel.cs" />
     <Compile Include="Task.xaml.cs">
       <DependentUpon>Task.xaml</DependentUpon>
     </Compile>
@@ -79,7 +79,7 @@
     <Compile Include="UnitTest\TruncatorTest.cs" />
     <Compile Include="Tables\Configuration.cs" />
     <Compile Include="Tables\Task.cs" />
-    <Compile Include="Tables\TimeEntry.cs" />
+    <Compile Include="Tables\Interval.cs" />
     <Compile Include="Storage\Constraint.cs" />
     <Compile Include="Storage\IDatabase.cs" />
     <Compile Include="Storage\IStatement.cs" />
@@ -103,14 +103,14 @@
     <Compile Include="Storage\SqlException.cs" />
     <Compile Include="StatusViewModel.cs" />
     <Compile Include="TaskViewModel.cs" />
-    <Compile Include="TimeEntryViewModel.cs" />
+    <Compile Include="IntervalViewModel.cs" />
     <Compile Include="TimeService.cs" />
     <Compile Include="Truncator.cs" />
-    <Page Include="ListInterval.xaml">
+    <Page Include="TaskList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ListIntervalEntry.xaml">
+    <Page Include="Interval.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -122,11 +122,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ListInterval.xaml.cs">
-      <DependentUpon>ListInterval.xaml</DependentUpon>
+    <Compile Include="TaskList.xaml.cs">
+      <DependentUpon>TaskList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ListIntervalEntry.xaml.cs">
-      <DependentUpon>ListIntervalEntry.xaml</DependentUpon>
+    <Compile Include="Interval.xaml.cs">
+      <DependentUpon>Interval.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

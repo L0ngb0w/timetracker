@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace TimeTracker.Design {
     class DesignTaskViewModel : ITaskViewModel {
-        readonly ObservableCollection<ITimeEntryViewModel> mEntries;
+        readonly ObservableCollection<IIntervalViewModel> mEntries;
 
         public string Text { get; set; }
 
@@ -18,7 +18,7 @@ namespace TimeTracker.Design {
 
         public long TaskId { get { return 123; } }
 
-        public ObservableCollection<ITimeEntryViewModel> TimeEntries {
+        public ObservableCollection<IIntervalViewModel> Intervals {
             get { return mEntries; }
         }
 
@@ -44,10 +44,10 @@ namespace TimeTracker.Design {
         public DesignTaskViewModel() {
             Text = Guid.NewGuid().ToString();
 
-            mEntries = new ObservableCollection<ITimeEntryViewModel> {
-                new DesignTimeEntryViewModel(),
-                new DesignTimeEntryViewModel(),
-                new DesignTimeEntryViewModel(),
+            mEntries = new ObservableCollection<IIntervalViewModel> {
+                new DesignIntervalViewModel(),
+                new DesignIntervalViewModel(),
+                new DesignIntervalViewModel(),
             };
         }
     }

@@ -17,11 +17,11 @@ using System.Windows.Shapes;
 namespace TimeTracker
 {
   /// <summary>
-  /// Interaction logic for ListIntervalEntry.xaml
+  /// Interaction logic for Interval.xaml
   /// </summary>
-  public partial class ListIntervalEntry : UserControl
+  public partial class Interval : UserControl
   {
-    public static readonly DependencyProperty IsInEditModeProperty = DependencyProperty.Register("IsInEditMode", typeof(bool), typeof(ListIntervalEntry));
+    public static readonly DependencyProperty IsInEditModeProperty = DependencyProperty.Register("IsInEditMode", typeof(bool), typeof(Interval));
 
     public bool IsInEditMode
     {
@@ -29,7 +29,7 @@ namespace TimeTracker
       set { SetValue(IsInEditModeProperty, value); }
     }
 
-    public ListIntervalEntry()
+    public Interval()
     {
       InitializeComponent();
 
@@ -56,7 +56,7 @@ namespace TimeTracker
       IsInEditMode = false;
     }
 
-    void ListIntervalEntry_OnMouseUp(object sender, MouseButtonEventArgs e)
+    void Interval_OnMouseUp(object sender, MouseButtonEventArgs e)
     {
       var binding = TextBoxDescription.GetBindingExpression(TextBox.TextProperty);
       binding.UpdateTarget();

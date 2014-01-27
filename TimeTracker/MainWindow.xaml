@@ -95,6 +95,6 @@
                 <TextBlock Name="TextBlockGotoLaterDate" VerticalAlignment="Center" FontFamily="Consolas" FontSize="20" IsEnabled="{Binding Path=CanGotoLaterDate}" ><Hyperlink Click="OnGotoLaterDate" >&gt;</Hyperlink></TextBlock>
             </StackPanel>
         </Grid>
-        <tt:ListInterval x:Name="ListEntry" Margin="8" />
+        <tt:TaskList x:Name="ListEntry" Margin="8" />
     </DockPanel>
 </Window>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace TimeTracker.Design {
-    class DesignTimeEntryViewModel : ITimeEntryViewModel {
+    class DesignIntervalViewModel : IIntervalViewModel {
         public long EntryId { get { return 456; } }
 
         public DateTime StartTime { get; set; }
@@ -29,7 +29,7 @@ namespace TimeTracker.Design {
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
-        public DesignTimeEntryViewModel() {
+        public DesignIntervalViewModel() {
             Text = Guid.NewGuid().ToString();
 
             StartTime = DateTime.Now - TimeSpan.FromMinutes(5.234);

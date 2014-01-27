@@ -2,7 +2,7 @@
 using System.ComponentModel;
 
 namespace TimeTracker {
-    public interface ITimeEntryViewModel : INotifyPropertyChanged {
+    public interface IIntervalViewModel : INotifyPropertyChanged {
         long EntryId { get; }
 
         DateTime StartTime { get; set; }
@@ -20,7 +20,7 @@ namespace TimeTracker {
         void Terminate();
     }
 
-    public class TimeEntryViewModel : ITimeEntryViewModel {
+    public class IntervalViewModel : IIntervalViewModel {
         readonly IDatabaseViewModel mDatabase;
         readonly Tables.TimeEntry mEntry;
 
@@ -28,7 +28,7 @@ namespace TimeTracker {
 
         public Tables.TimeEntry Entry { get { return mEntry; } }
 
-        public TimeEntryViewModel(IDatabaseViewModel database, Tables.TimeEntry entry) {
+        public IntervalViewModel(IDatabaseViewModel database, Tables.TimeEntry entry) {
             if (database == null)
                 throw new ArgumentNullException("database");
 
@@ -39,7 +39,7 @@ namespace TimeTracker {
             mEntry = entry;
         }
 
-        public TimeEntryViewModel(IDatabaseViewModel database, ITaskViewModel task) {
+        public IntervalViewModel(IDatabaseViewModel database, ITaskViewModel task) {
             if (database == null)
                 throw new ArgumentNullException("database");
 

@@ -126,7 +126,7 @@
                 <ColumnDefinition Width="32" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <ItemsControl x:Name="Intervals" ItemsSource="{Binding TimeEntries}" Grid.Column="1">
+            <ItemsControl x:Name="Intervals" ItemsSource="{Binding Intervals}" Grid.Column="1">
                 <ItemsControl.Style>
                     <Style TargetType="{x:Type ItemsControl}">
                         <Style.Triggers>
@@ -141,7 +141,7 @@
                 </ItemsControl.Style>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <tt:ListIntervalEntry />
+                        <tt:Interval />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace TimeTracker
 {
   /// <summary>
-  /// Interaction logic for ListInterval.xaml
+  /// Interaction logic for TaskList.xaml
   /// </summary>
-  public partial class ListInterval : UserControl
+  public partial class TaskList : UserControl
   {
-    public ListInterval()
+    public TaskList()
     {
       InitializeComponent();
     }
