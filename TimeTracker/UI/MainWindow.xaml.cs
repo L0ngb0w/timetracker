@@ -7,7 +7,7 @@ using System.Timers;
 using System.Windows;
 using TimeTracker.Storage;
 
-namespace TimeTracker {
+namespace TimeTracker.UI {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

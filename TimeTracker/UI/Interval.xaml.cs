@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TimeTracker
+namespace TimeTracker.UI
 {
   /// <summary>
   /// Interaction logic for Interval.xaml

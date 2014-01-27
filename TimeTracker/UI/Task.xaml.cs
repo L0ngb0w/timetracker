@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace TimeTracker {
+namespace TimeTracker.UI {
     /// <summary>
     /// Interaction logic for Task.xaml
     /// </summary>
